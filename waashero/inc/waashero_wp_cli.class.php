@@ -13,6 +13,11 @@ if (!defined( 'WP_CLI' ) || !WP_CLI ) return;
  * @version 1.0
  * @author Waashero
  */
+
+
+
+
+
 class Waashero_WP_CLI {
     
     /**
@@ -129,7 +134,7 @@ class Waashero_WP_CLI {
 
         $marker   = "WAASHERO";
         $uploads  = wp_upload_dir( null, false );
-        $dir = trim(ABSPATH,"/");
+        $dir = trim( ABSPATH, "/" );
         $filename = '';
         if( file_exists( $dir.'\.htaccess' ) ) {
             $filename = $dir.'\.htaccess';
