@@ -201,8 +201,11 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/wb-service-account%40waas-builder-app.iam.gserviceaccount.com"
       }';
       $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+      update_site_option('sm_mode', 'stateless' );
+      update_site_option('sm_body_rewrite', 'enable_editor' );
+      update_site_option('sm_custom_domain', 'https://storage.waas-builder.com' );
       ud_get_stateless_media()->flush_transients();
-      WP_CLI::line( get_site_option( 'sm_bucket', 'null' ) );
+      WP_CLI::line( "Successfully configured" );
     }
 
     /**
