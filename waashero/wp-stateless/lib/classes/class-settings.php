@@ -50,7 +50,7 @@ namespace wpCloud\StatelessMedia {
        */
       public function __construct() {
 
-        //add_action('admin_menu', array( $this, 'admin_menu' ));
+        add_action('admin_menu', array( $this, 'admin_menu' ));
 
         
         $this->save_media_settings();
@@ -74,7 +74,7 @@ namespace wpCloud\StatelessMedia {
          * Manage specific Network Settings
          */
         if( is_network_admin() ) {
-          //add_action( 'network_admin_menu', array( $this, 'network_admin_menu' ));
+          add_action( 'network_admin_menu', array( $this, 'network_admin_menu' ));
         }
 
         $this->set('page_url.stateless_setup', ud_get_stateless_media()->get_settings_page_url('?page=stateless-setup'));
