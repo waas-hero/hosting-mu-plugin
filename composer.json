@@ -1,0 +1,13 @@
+
+{
+    "name": "waashero/waashero-must-use",
+    "description": "This plugin stores all media to cloud. High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.",
+    "license": "GPL-2.0+",
+    "type": "wordpress-muplugin",
+    "require": {
+            "composer/installers": "~1.0"
+    },
+    "installer-paths": {
+        "public/content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+    }
+}

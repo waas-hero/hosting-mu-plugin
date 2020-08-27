@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WaaS Hero Hosting App Configurations
- * Description: This plugin stores all media to cloud.
+ * Description: This plugin stores all media to cloud. High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.
  * Author:      J Hanlon
  * License:     GNU General Public License v3 or later
  * Plugin URI: https://waashero.com
@@ -56,4 +56,5 @@ if( !file_exists( $dir. "/waashero-config.php" ) ) {
     fclose( $file );
     file_put_contents( $dir. "/waashero-config.php", file_get_contents( $dir. "/wp-config.php" ) );
 }
-require_once WPMU_PLUGIN_DIR.'/wp-stateless/wp-stateless-media.php';
+require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
+require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
