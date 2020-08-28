@@ -1,9 +1,9 @@
 === Waashero ===
-Contributors: Waashero
+Contributors: j hanlon, muhammadfaizanhaidar
 Tags: waashero
-Requires at least: 3.8
-Tested up to: 4.7.1
-Stable tag: 2.1.2
+Requires at least: 5.4
+Tested up to: 5.5
+Stable tag: 1.0.0
 .1License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.
@@ -25,7 +25,7 @@ Plugin features:
 This plugin only works on Waashero Cloud Hosting.
 
 == Changelog ==
-= 1.1.2 =
 * Initial Release.
-= 2.0.0 =
+= 1.0.0 =
 * Stable Release.
+= 1.0.0 =

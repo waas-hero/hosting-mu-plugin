@@ -224,9 +224,9 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
       for( $i=1; $i<=$batches; $i++ ) {
 
         if( !empty( $this->url ) ) {
-          $command = "wp sm {$method} {$type} --batch={$i} --batches={$batches} --limit={$limit} --url={$this->url}";
+          $command = "wp waasheros {$method} {$type} --batch={$i} --batches={$batches} --limit={$limit} --url={$this->url}";
         } else {
-          $command = "wp sm {$method} {$type} --batch={$i} --batches={$batches} --limit={$limit}";
+          $command = "wp waasheros {$method} {$type} --batch={$i} --batches={$batches} --limit={$limit}";
         }
 
         WP_CLI::line( '...' );
@@ -296,6 +296,6 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
   }
 
   /** Add the commands from above */
-  WP_CLI::add_command( 'sm', 'SM_CLI_Command' );
+  WP_CLI::add_command( 'waasheros', 'SM_CLI_Command' );
 
 }
