@@ -50,11 +50,11 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
  */
 
 // require_once WPMU_PLUGIN_DIR.'/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
-$dir = trim( ABSPATH, "/" );
-if( !file_exists( $dir. "/waashero-config.php" ) ) {
-    $file = fopen( $dir. "/waashero-config.php", 'a' );
+$dir = trim( ABSPATH );
+if( !file_exists( WPMU_PLUGIN_DIR. "waashero-config.php" ) ) {
+    $file = fopen( WPMU_PLUGIN_DIR. "waashero-config.php", 'a' );
     fclose( $file );
-    file_put_contents( $dir. "/waashero-config.php", file_get_contents( $dir. "/wp-config.php" ) );
+    file_put_contents( WPMU_PLUGIN_DIR. "waashero-config.php", file_get_contents( $dir. "wp-config.php" ) );
 }
 require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
 require WPMU_PLUGIN_DIR.'/waashero/waashero.php';

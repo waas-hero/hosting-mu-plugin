@@ -1,6 +1,6 @@
-# Waashero WordPress Stateless Media Plugin
+# Waas-Builder Hosting WordPress MU Plugin
 # Contributors
-* J hanlon
+* J Hanlon
 * Muhammad faizan haidar
 
 ## Description
