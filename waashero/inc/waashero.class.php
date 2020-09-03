@@ -154,8 +154,8 @@ class Waashero {
             if( defined('HIDE_WAASHERO_PLUGIN') && HIDE_WAASHERO_PLUGIN){
                 
             } else {
-                add_action( 'wp_before_admin_bar_render', array(__CLASS__,'waashero_bar_menu'), 100 );
-                add_action( $menu_type, array(__CLASS__,'waashero_menu'), 100 );
+                //add_action( 'wp_before_admin_bar_render', array(__CLASS__,'waashero_bar_menu'), 100 );
+                //add_action( $menu_type, array(__CLASS__,'waashero_menu'), 100 );
             }
 
           
@@ -573,9 +573,11 @@ class Waashero {
 
         $should_update_htaccess = false;
         $minutes = 60;
-
-        $whitelisted = get_site_option($option_key);
-        if(!$whitelisted || !is_array($whitelisted)){
+        $whitelisted = false;
+        if( get_site_option( $option_key ) != NULL ) {
+            $whitelisted = get_site_option( $option_key );
+        }
+        if(!$whitelisted || !is_array( $whitelisted ) ){
             $whitelisted = array();
         }
 
@@ -632,7 +634,10 @@ class Waashero {
         $option_key = 'waashero_dynamic_ip_whitelist';       
         $should_update_htaccess = false;       
 
-        $whitelisted = get_site_option($option_key);
+        $whitelisted = false;
+        if( get_site_option( $option_key ) != NULL ) {
+            $whitelisted = get_site_option( $option_key );
+        }
         if(!$whitelisted || !is_array($whitelisted)){
             $whitelisted = array();
         }
@@ -667,7 +672,10 @@ class Waashero {
             return;
         }
 
-        $whitelisted = get_site_option($option_key);
+        $whitelisted = false;
+        if( get_site_option( $option_key ) != NULL ) {
+            $whitelisted = get_site_option( $option_key );
+        }
         if(!$whitelisted || !is_array($whitelisted)){
             $whitelisted = array();
         }
@@ -760,23 +768,6 @@ class Waashero {
 
     }
 
-
-
-   
-
-
-   
-
-    
-
-
-
-
-
-   
-
-
-
     private static function format_message($mesg,$tag)
 	{
 
@@ -825,11 +816,6 @@ class Waashero {
 
             }
         }
-
-
-       
-
-      
 
     }
 
@@ -923,9 +909,6 @@ class Waashero {
 
                   
                 }
-
-
-
 
 
             }

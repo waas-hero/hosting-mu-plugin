@@ -146,27 +146,51 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
      */
     public function waashero_write_configs( $args, $assoc_args ) {
       $dir = trim( ABSPATH, "/" );
-      $config_transformer = new \WPConfigTransformer( $dir. "/wp-config.php" );
+      $config_transformer = new \WPConfigTransformer( WPMU_PLUGIN_DIR. "/waashero-config.php" );
       //$privateKeyData = base64_decode($data['privateKeyData']);
-
+      $file = fopen(WPMU_PLUGIN_DIR. "/waashero-config.php", "a" );
       foreach( $assoc_args as $key => $value ) {
         if( is_multisite() ) {
           if( $key != 'sm_key_json' ) {
             update_site_option( $key, $value );
-            $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+            if ( $config_transformer->exists( 'constant', $key ) ) {
+          
+              $config_transformer->update( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => WPConfigTransformer::ANCHOR_EOF ] );
+            } else {
+              $config_transformer->add( 'constant', "$key", "'$value'", array( 'raw' => true) );
+             fwrite( $file, "\n" );
+            
+            }
           } else {
-            $value = base64_decode( $value );
+  
             update_site_option( $key, $value );
-            $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+            if ( $config_transformer->exists( 'constant', $key ) ) {
+          
+              $config_transformer->update( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+            } else {
+              $config_transformer->add( 'constant', "$key", "'$value'", array( 'raw' => true) );
+              fwrite( $file, "\n" );
+            }
           }
         } else{
           if( $key != 'sm_key_json' ) {
             update_option( $key, $value );
-            $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+            if ( $config_transformer->exists( 'constant', $key ) ) {
+          
+              $config_transformer->update( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+            } else {
+              $config_transformer->add( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+              fwrite( $file, "\n" );
+            }
           } else {
-            $value = base64_decode( $value );
             update_option( $key, $value );
-            $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+            if ( $config_transformer->exists( 'constant', $key ) ) {
+          
+              $config_transformer->update( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+            } else {
+              $config_transformer->add( 'constant', "$key", "'$value'", [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+              fwrite( $file, "\n" );
+            }
           }
         }
       }
@@ -200,11 +224,18 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/wb-service-account%40waas-builder-app.iam.gserviceaccount.com"
       }';
-      $config_transformer->update( 'constant', "$key", "'$value'", array( 'raw' => true) );
+      if ( $config_transformer->exists( 'constant', $key ) ) {
+          
+        $config_transformer->update( 'constant', "$key", "'$value'",  [ 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ] );
+      } else {
+        $config_transformer->add( 'constant', "$key", "'$value'", array( 'raw' => true, 'anchor' => \WPConfigTransformer::ANCHOR_EOF ) );
+        fwrite( $file, "\n" );
+      }
       update_site_option('sm_mode', 'stateless' );
       update_site_option('sm_body_rewrite', 'enable_editor' );
       update_site_option('sm_custom_domain', 'https://storage.waas-builder.com' );
       ud_get_stateless_media()->flush_transients();
+      fclose( $file );
       WP_CLI::line( "Successfully configured" );
     }
 

@@ -914,24 +914,6 @@ EOB;
             </div>
         </div>
 
-
-      
-       
-
-
-
-
-
-    
-
-   
-
-     
-
-
-    
-     
-
         <?php wp_nonce_field('waashero_nonce', 'waashero_nonce'); ?>
         <?php submit_button() ?>
     </form>
@@ -1109,24 +1091,6 @@ EOB;
             </div>
         </div>
 
-
-      
-       
-
-
-
-
-
-    
-
-   
-
-     
-
-
-    
-     
-
         <?php wp_nonce_field('waashero_nonce', 'waashero_nonce'); ?>
         <?php submit_button() ?>
     </form>
@@ -1212,22 +1176,7 @@ EOB;
         </div>
 
 
-      
-       
 
-
-
-
-
-    
-
-   
-
-     
-
-
-    
-     
 
         <?php wp_nonce_field('waashero_nonce', 'waashero_nonce'); ?>
         <?php submit_button() ?>

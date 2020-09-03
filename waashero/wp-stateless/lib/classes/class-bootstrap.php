@@ -873,8 +873,8 @@ namespace wpCloud\StatelessMedia {
         if(defined('WP_STATELESS_MEDIA_JSON_KEY') && WP_STATELESS_MEDIA_JSON_KEY){
           $settings['key_json'] = "Currently configured via a constant.";
         }
-        wp_localize_script('wp-stateless', 'wp_stateless_settings', $settings);
-        wp_localize_script('wp-stateless', 'wp_stateless_compatibility', Module::get_modules());
+        wp_localize_script( 'wp-stateless', 'wp_stateless_settings', $settings);
+        wp_localize_script( 'wp-stateless', 'wp_stateless_compatibility', Module::get_modules());
         wp_register_style( 'jquery-ui-regenthumbs', ud_get_stateless_media()->path( 'static/scripts/jquery-ui/redmond/jquery-ui-1.7.2.custom.css', 'url' ), array(), '1.7.2' );
 
       }
@@ -985,7 +985,7 @@ namespace wpCloud\StatelessMedia {
           $attr[ 'class' ] = $attr[ 'class' ] . ' wp-stateless-item';
           $attr[ 'data-image-size' ] = is_array( $size ) ? implode( 'x', $size ) : $size;
           $attr[ 'data-stateless-media-bucket' ] = isset( $sm_cloud[ 'bucket' ] ) ? $sm_cloud[ 'bucket' ] : false;
-          $attr[ 'data-stateless-media-name' ] = $sm_cloud[ 'name' ];
+          $attr[ 'data-stateless-media-name' ]   = $sm_cloud[ 'name' ];
         }
 
         return $attr;
@@ -1000,6 +1000,7 @@ namespace wpCloud\StatelessMedia {
        */
       public function views_upload( $views ) {
         $views['stateless'] = '<a href="#">' . __( 'Stateless Media' ) . '</a>';
+        
         return $views;
       }
 
@@ -1026,8 +1027,8 @@ namespace wpCloud\StatelessMedia {
 
         /** Start determine remote file */
         $img_url = wp_get_attachment_url($id);
-        $meta = wp_get_attachment_metadata($id);
-        $width = $height = 0;
+        $meta    = wp_get_attachment_metadata($id);
+        $width   = $height = 0;
         $is_intermediate = false;
 
         //** try for a new style intermediate size */
@@ -1042,7 +1043,7 @@ namespace wpCloud\StatelessMedia {
             $img_url = dirname($img_url) . $intermediate['file'];
           }
           
-          $width = $intermediate['width'];
+          $width  = $intermediate['width'];
           $height = $intermediate['height'];
           $is_intermediate = true;
         }
@@ -1054,13 +1055,13 @@ namespace wpCloud\StatelessMedia {
          */
         if ( !$width && !$height ) {
           $sm_cloud = get_post_meta( $id, 'sm_cloud', true );
-          if ( is_string($size) && !empty( $sm_cloud['sizes'] ) && !empty( $sm_cloud['sizes'][$size] ) ) {
+          if ( is_string( $size ) && !empty( $sm_cloud['sizes'] ) && !empty( $sm_cloud['sizes'][$size] ) ) {
             global $_wp_additional_image_sizes;
 
             $img_url = !empty( $sm_cloud['sizes'][$size]['fileLink'] ) ? $sm_cloud['sizes'][$size]['fileLink'] : $img_url;
 
             if ( !empty( $_wp_additional_image_sizes[ $size ] ) ) {
-              $width = !empty( $_wp_additional_image_sizes[ $size ]['width'] ) ? $_wp_additional_image_sizes[ $size ]['width'] : $width;
+              $width  = !empty( $_wp_additional_image_sizes[ $size ]['width'] ) ? $_wp_additional_image_sizes[ $size ]['width'] : $width;
               $height = !empty( $_wp_additional_image_sizes[ $size ]['height'] ) ? $_wp_additional_image_sizes[ $size ]['height'] : $height;
             }
 
@@ -1071,7 +1072,7 @@ namespace wpCloud\StatelessMedia {
         if ( !$width && !$height && isset( $meta['width'], $meta['height'] ) ) {
 
           //** any other type: use the real image */
-          $width = $meta['width'];
+          $width  = $meta['width'];
           $height = $meta['height'];
         }
 
@@ -1080,7 +1081,7 @@ namespace wpCloud\StatelessMedia {
 
           //** we have the actual image size, but might need to further constrain it if content_width is narrower */
           list( $width, $height ) = image_constrain_size_for_editor( $width, $height, $size );
-          $img_url = apply_filters('wp_stateless_bucket_link', $img_url);
+          $img_url = apply_filters( 'wp_stateless_bucket_link', $img_url );
           return array( $img_url, $width, $height, $is_intermediate );
         }
 
@@ -1104,11 +1105,11 @@ namespace wpCloud\StatelessMedia {
         /* Determine if the media file has GS data at all. */
         $sm_cloud = get_post_meta( $attachment_id, 'sm_cloud', true );
         // If metadata not passed the get metadata from post meta.
-        if(empty($metadata)){
+        if( empty( $metadata ) ) {
           $metadata = get_post_meta( $attachment_id, '_wp_attachment_metadata', true );
         }
 
-        if(empty($metadata)){
+        if( empty( $metadata ) ) {
           $metadata = [];
         }
 
@@ -1141,17 +1142,19 @@ namespace wpCloud\StatelessMedia {
         if( null === $this->client ) {
 
           $key_json = $this->get( 'sm.key_json' );
-          if ( empty($key_json) ) {
+          if ( empty( $key_json ) ) {
             if( defined( 'sm_key_json' ) ) {
               $key_json = sm_key_json;
             } else {
-              $key_json = get_site_option( 'sm_key_json' );
+              if( get_site_option( 'sm_key_json' ) != NULL ) {
+                $key_json = get_site_option( 'sm_key_json' );
+              }
             }
           }
 
           /* Try to initialize GS Client */
           $this->client = GS_Client::get_instance( array(
-            'bucket' => $this->get( 'sm.bucket' ),
+            'bucket'   => $this->get( 'sm.bucket' ),
             'key_json' => $key_json
           ) );
         }
@@ -1223,7 +1226,11 @@ namespace wpCloud\StatelessMedia {
        *
        */
       public function activate() {
-        add_action( 'activated_plugin', array($this, 'redirect_to_splash'), 99 );
+        add_action( 
+          'activated_plugin', 
+          array($this, 'redirect_to_splash'), 
+          99 
+        );
         $this->run_upgrade_process();
       }
 
@@ -1234,8 +1241,7 @@ namespace wpCloud\StatelessMedia {
        *
        * @author alim@UD
        */
-      public function run_install_process()
-      {
+      public function run_install_process() {
         // calling the upgrade function because it's same as this point for fresh install or updates.
         $this->run_upgrade_process();
       }
@@ -1247,8 +1253,7 @@ namespace wpCloud\StatelessMedia {
        *
        * @author alim@UD
        */
-      public function run_upgrade_process()
-      {
+      public function run_upgrade_process() {
         // Creating database on new installation.
         $this->create_db();
         /**
@@ -1261,15 +1266,18 @@ namespace wpCloud\StatelessMedia {
        * Create database on plugin activation.
        * @param boolean $force - whether to create db even if option exists. For debug purpose only.
        */
-      public function create_db($force = false) {
+      public function create_db( $force = false ) {
         global $wpdb;
-        $sm_sync_db_version = get_option( 'sm_sync_db_version' );
+        $sm_sync_db_version =  false;
+        if( get_option( 'sm_sync_db_version' ) != NULL ) {
+          $sm_sync_db_version = get_option( 'sm_sync_db_version' );
+        }
 
         if( $sm_sync_db_version && $force == false ) {
           return;
         }
 
-        $table_name = $wpdb->prefix . 'sm_sync';
+        $table_name      = $wpdb->prefix . 'sm_sync';
         $charset_collate = $wpdb->get_charset_collate();
 
         // `expire` timestamp NULL DEFAULT NULL,
@@ -1283,14 +1291,17 @@ namespace wpCloud\StatelessMedia {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
 
-        add_option( 'sm_sync_db_version', $this->args[ 'version' ] );
+        add_option( 
+          'sm_sync_db_version', 
+          $this->args[ 'version' ] 
+        );
       }
 
       /**
        * 
        * Delete table when blog is deleted.
        */
-      public function wp_delete_site($old_site){
+      public function wp_delete_site( $old_site ) {
         global $wpdb;
         
         switch_to_blog( $old_site->id );
@@ -1306,10 +1317,10 @@ namespace wpCloud\StatelessMedia {
        *
        * @param string $plugin
        */
-      public function redirect_to_splash($plugin =''){
+      public function redirect_to_splash( $plugin ='' ) {
         $this->settings = new Settings();
 
-        if(defined( 'WP_CLI' ) || $this->settings->get('sm.key_json') || isset($_POST['checked']) && count($_POST['checked']) > 1){
+        if( defined( 'WP_CLI' ) || $this->settings->get( 'sm.key_json' ) || isset( $_POST['checked'] ) && count( $_POST['checked'] ) > 1 ) {
           return;
         }
         
@@ -1328,10 +1339,10 @@ namespace wpCloud\StatelessMedia {
         
         if( $plugin == plugin_basename( $this->boot_file ) ) {
           $url = $this->get_settings_page_url('?page=stateless-setup&step=splash-screen');
-          if(json_decode($this->settings->get('sm.key_json'))){
-            $url = $this->get_settings_page_url('?page=stateless-settings');
+          if( json_decode( $this->settings->get( 'sm.key_json' ) ) ) {
+            $url = $this->get_settings_page_url( '?page=stateless-settings' );
           }
-          exit( wp_redirect($url));
+          exit( wp_redirect( $url ) );
         }
       }
 

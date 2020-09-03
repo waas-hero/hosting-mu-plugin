@@ -696,7 +696,11 @@ class ApcuObjectCache
             }
 
             if ( ! isset( $value ) )
-                $value = get_site_option( $transient_option );
+                if( get_site_option( $transient_option ) != NULL ) {
+                    $value = get_site_option( $transient_option );
+                } else {
+                    $value = false;
+                }
             /**** Ori WP func end ****/
         }
         else {

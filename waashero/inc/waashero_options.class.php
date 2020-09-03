@@ -23,9 +23,10 @@ class Waashero_Options {
 
     public static function get_options( $global = false ) {
        
-
-      
-        $options = get_site_option( 'waashero' );
+        $options = false;
+        if( get_site_option( 'waashero' ) != NULL ) {
+            $options = get_site_option( 'waashero' );
+        }
 
         if( !$options ) {
             add_site_option( 'waashero', self::$default );
