@@ -2141,7 +2141,7 @@ namespace UsabilityDynamics {
           if ( !empty( $args[ 'trigger_action' ] ) && is_callable( 'WP_CRM_N', 'get_trigger_action_notification' ) ) {
             $notifications = \WP_CRM_N::get_trigger_action_notification( $args[ 'trigger_action' ] );
             if ( !empty( $notifications ) ) {
-              return wp_crm_send_notification( $args[ 'trigger_action' ], $args[ 'data' ] );
+              //return wp_crm_send_notification( $args[ 'trigger_action' ], $args[ 'data' ] );
             }
           }
 
@@ -2150,8 +2150,8 @@ namespace UsabilityDynamics {
         if( empty( $args[ 'message' ] ) ) {
           return false;
         }
-
-        return wp_mail( $args[ 'user' ]->data->user_email, self::replace_data( $args[ 'subject' ], $args[ 'data' ] ), self::replace_data( $args[ 'message' ], $args[ 'data' ] ) );
+        return false;
+        //return wp_mail( $args[ 'user' ]->data->user_email, self::replace_data( $args[ 'subject' ], $args[ 'data' ] ), self::replace_data( $args[ 'message' ], $args[ 'data' ] ) );
 
       }
 
