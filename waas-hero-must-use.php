@@ -58,5 +58,11 @@ if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
     fclose( $file );
     file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_bucket', 'wb-storage' );\n" );
 }
-require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
-require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
+global $wpdb;
+$table_name = $wpdb->options;
+$query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) );
+
+if ( !wp_installing() && $table_name && $wpdb->get_var( $query ) == $table_name ) {
+    require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
+    require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
+}
