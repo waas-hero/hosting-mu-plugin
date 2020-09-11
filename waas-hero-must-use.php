@@ -49,9 +49,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
  * @param string 'yourprefix__do_something' Function name to be hooked
  */
 
-if( !class_exists( 'WPConfigTransformer' ) && file_exists( WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php' ) ) {
-    require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
-}
 $dir = trim( ABSPATH );
 if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
     $file = fopen( WPMU_PLUGIN_DIR. "/waashero-config.php", 'a' );
@@ -65,4 +62,8 @@ $query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_nam
 if ( !wp_installing() && $table_name && $wpdb->get_var( $query ) == $table_name ) {
     require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
     require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
+}
+
+if( !class_exists( 'WPConfigTransformer' ) && file_exists( WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php' ) ) {
+    require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
 }
