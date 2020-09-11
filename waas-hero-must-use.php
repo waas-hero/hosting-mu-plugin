@@ -49,7 +49,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
  * @param string 'yourprefix__do_something' Function name to be hooked
  */
 
-if( !class_exists( 'WPConfigTransformer' ) ) {
+if( !class_exists( 'WPConfigTransformer' ) && file_exists( WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php' ) ) {
     require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
 }
 $dir = trim( ABSPATH );
