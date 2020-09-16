@@ -55,8 +55,9 @@ class Waashero_Api
      * @return void
      */
     public static  function AddDomainAlias( $domain ) {
-         
 
+
+        $response = array();
         try{
              
             $wildcard = false;             
@@ -82,10 +83,11 @@ class Waashero_Api
             // close curl resource to free up system resources 
             curl_close( $ch );      
 
-
             $result = json_decode( $output, true );
-
-            return $result; 
+            $response['data'] = $result;
+            $response['success'] = true;
+            echo json_encode($response);
+            die;
         }
         catch( Exception $e ) {
             return   array('success'  => false, 'error'=> 'unknown');;

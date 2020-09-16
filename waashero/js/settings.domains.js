@@ -58,31 +58,33 @@ function myAdminNotice(msg,level) {
 
 jQuery( document ).ready(function ($) {
 
-    
 
-    $( document ).on( "click", "#domain-alias-submit", function () {
+     $("#wu-custom-domain").one('submit', function(e) {
 
-        var submitBtn = $(this);
-        submitBtn.hide();
-        $("<img class='waashero-loader' src='/wp-admin/images/loading.gif'>").insertAfter(submitBtn);
-    
-      
+        e.preventDefault();
+        let domain_name = $('input[name="custom-domain"]').val();
+        if(!domain_name){
+            return false;
+        }
+        let form_object =  $(this);
+        //var submitBtn = $(this);
+        //submitBtn.hide();
+        //$("<img class='waashero-loader' src='/wp-admin/images/loading.gif'>").insertAfter(submitBtn);
+
         var data = {
             'action': 'waashero_add_domain_alias',
-            'domain': $("#domain-alias-hostname").val()
+            'domain': domain_name
         };
-
         jQuery.post( ajaxurl, data, function ( response ) {
-           
-            if ( response.success ) {
-                location.reload();
-            } else {
-            
+             response = JSON.parse(response);
+             if ( response.success ){
+                //location.reload();
+                $(form_object).submit();
+            }else{
                 myAdminNotice( response.error, "error" );
                 $('.waashero-loader').remove();
-                submitBtn.show();
+               /// submitBtn.show();
             }
-
         });
     });
 
