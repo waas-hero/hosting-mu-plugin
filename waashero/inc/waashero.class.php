@@ -139,6 +139,7 @@ class Waashero {
 
             add_action( 'admin_enqueue_scripts',   function () {
                 wp_enqueue_style( 'waashero_css','/wp-content/mu-plugins/waashero/css/waashero.css');
+                wp_enqueue_script( 'waashero_js','/wp-content/mu-plugins/waashero/js/settings.domains.js');
             });
 
           
