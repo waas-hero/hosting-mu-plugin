@@ -12,14 +12,26 @@ class Waashero_Api
 {
 
     
+    /**
+     * waashero_api Gets all domains for a server.
+     *
+     *
+     * @version 1.0
+     * @author Waashero
+     * @return $domains JSON
+     */
      public static  function GetDomains() {
-          
+        
+        $endpoint = 'domains/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
                 $ch = curl_init(); 
 
+                // set header with token 
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
                 // set url 
-                curl_setopt( $ch, CURLOPT_URL, 'https://app.waashero.com/api/client/getdomains?apikey='. urlencode ( WAASHERO_CLIENT_API_KEY ) ); 
+                curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
                 //return the transfer as a string 
                 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 ); 
@@ -55,9 +67,10 @@ class Waashero_Api
      * @return void
      */
     public static  function AddDomainAlias( $domain ) {
-
-
-        $response = array();
+         
+        $endpoint = 'zones/domainalias/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
+        
         try{
              
             $wildcard = false;             
@@ -67,15 +80,17 @@ class Waashero_Api
              
             $ch = curl_init();            
 
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
             // set url 
-            curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/adddomainalias'); 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
             //return the transfer as a string 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_POST, true); 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, 'apikey='.urlencode (WAASHERO_CLIENT_API_KEY). '&domain='.urlencode ( $domain ). '&wildcard='.urlencode ( $wildcard ) ); 
+            curl_setopt($ch, CURLOPT_POSTFIELDS, 'domain='.urlencode ( $domain ). '&wildcard='.urlencode ( $wildcard ) ); 
 
             // $output contains the output string 
             $output = curl_exec($ch); 
@@ -83,11 +98,10 @@ class Waashero_Api
             // close curl resource to free up system resources 
             curl_close( $ch );      
 
+
             $result = json_decode( $output, true );
-            $response['data'] = $result;
-            $response['success'] = true;
-            echo json_encode($response);
-            die;
+
+            return $result; 
         }
         catch( Exception $e ) {
             return   array('success'  => false, 'error'=> 'unknown');;
@@ -97,12 +111,17 @@ class Waashero_Api
 
      public static  function GetBackups(){
           
+        $endpoint = 'backups/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
-             $ch = curl_init(); 
 
-             // set url 
-             curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/getbackups?apikey='. urlencode (WAASHERO_CLIENT_API_KEY)); 
+            $ch = curl_init(); 
+
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            // set url 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
              //return the transfer as a string 
              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -134,11 +153,17 @@ class Waashero_Api
      public static  function GetCdnCacheInvalidation(){
          
 
-         try{
-             $ch = curl_init(); 
+        $endpoint = 'cdncacheinvalidation/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
-             // set url 
-             curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/getcdncacheinvalidation?apikey='. urlencode (WAASHERO_CLIENT_API_KEY)); 
+         try{
+
+            $ch = curl_init(); 
+
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            // set url 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
              //return the transfer as a string 
              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -169,12 +194,17 @@ class Waashero_Api
 
      public static  function ManualBackup(){
          
+        $endpoint = 'manualbackup/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
-             $ch = curl_init();            
 
-             // set url 
-             curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/manualbackup'); 
+            $ch = curl_init(); 
+
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            // set url 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
              //return the transfer as a string 
              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -208,11 +238,17 @@ class Waashero_Api
      public static  function FlushGoogleCdn(){
          
 
-         try{
-             $ch = curl_init();            
+        $endpoint = 'flushgooglecdn/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
-             // set url 
-             curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/flushgooglecdn'); 
+         try{
+
+            $ch = curl_init(); 
+
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            // set url 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
 
              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
              curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
@@ -245,11 +281,17 @@ class Waashero_Api
      public static  function GetTaskStatus($id){
          
 
-         try{
-             $ch = curl_init();             
+        $endpoint = 'taskstatus/'; //must include endslash
+        $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
-             // set url 
-             curl_setopt($ch, CURLOPT_URL, 'https://app.waashero.com/api/client/gettaskstatus'); 
+         try{
+
+            $ch = curl_init(); 
+
+            // set header with token 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            // set url 
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID );  
 
              //return the transfer as a string 
              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
