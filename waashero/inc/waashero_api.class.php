@@ -68,7 +68,7 @@ class Waashero_Api
      */
     public static  function AddDomainAlias( $domain ) {
          
-        $endpoint = 'zones/domainalias/'; //must include endslash
+        $endpoint = 'ultimo/domain/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
         
         try{
