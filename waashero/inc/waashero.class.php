@@ -17,11 +17,13 @@ class Waashero {
 
 
 
+        // Add hook to the new blog/subsite creation to create a DNS record
+        add_action('wp_insert_site', array($this, 'createRecordForNewSubsite') );
 
-        // add_action( 'upgrader_process_complete', array(&$this,'flush_cache_after_wp_update'), PHP_INT_MAX, 2 );     
+        //add_action( 'upgrader_process_complete', array(&$this,'flush_cache_after_wp_update'), PHP_INT_MAX, 2 );     
 
         // //disable updates
-        // add_filter( 'pre_site_transient_update_core', array($this, 'remove_core_updates') );
+        add_filter( 'pre_site_transient_update_core', array($this, 'remove_core_updates') );
         add_action( 'admin_enqueue_scripts', array(&$this, 'waashero_requirements_enqueue_scripts'));
         // add_filter( 'auto_core_update_send_email', '__return_false' );                                 // mute core update send email
         // add_filter( 'send_core_update_notification_email', '__return_false' );                        // mute core update email
@@ -202,6 +204,34 @@ class Waashero {
 
 
 
+
+    /**
+    * Add functionality to create an DNS A record on subsite creation
+    *
+    *
+    * @param $blog_id
+    * @param $user_id
+    * @param $domain
+    * @param $path
+    * @param $site_id
+    * @param $meta
+    *
+    * @return void
+    */
+    function createRecordForNewSubsite( $data ) {
+
+     
+        $add = Waashero_Api::AddDomainAlias( $data->domain );
+     
+        // Switch the newly created blog
+        //switch_to_blog( $data->blog_id );
+        
+        
+        // Restore to the current blog
+        //restore_current_blog();
+    }
+
+
     function parse_final_output( $output ) {
                    
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
@@ -301,14 +331,14 @@ class Waashero {
     
 
 
-    function waashero_wu_get_setting( $setting_value, $setting, $default ) {
+    // function waashero_wu_get_setting( $setting_value, $setting, $default ) {
         
-        if( $setting == 'network_ip' && defined( 'WAASHERO_PUBLIC_IP_ADDRESS' ) ) {
-            return WAASHERO_PUBLIC_IP_ADDRESS;     
-        }
+    //     if( $setting == 'network_ip' && defined( 'WAASHERO_PUBLIC_IP_ADDRESS' ) ) {
+    //         return WAASHERO_PUBLIC_IP_ADDRESS;     
+    //     }
 
-        return $setting_value;
-    }
+    //     return $setting_value;
+    // }
    
 
     public static function user_can_manage_admin_settings() {
