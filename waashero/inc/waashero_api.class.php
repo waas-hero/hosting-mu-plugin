@@ -22,7 +22,7 @@ class Waashero_Api
      */
      public static  function GetDomains() {
         
-        $endpoint = 'domains/'; //must include endslash
+        $endpoint = '/domains/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
@@ -66,11 +66,12 @@ class Waashero_Api
      * @param [type] $domain
      * @return void
      */
-    public static  function AddDomainAlias( $domain ) {
+    public static function AddDomainAlias( $domain ) {
          
-        $endpoint = 'ultimo/domain/'; //must include endslash
+        $endpoint = '/ultimo/domain/'; //must include all slashes
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
-        
+        $url = WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID;
+
         try{
              
             $wildcard = false;             
@@ -78,40 +79,45 @@ class Waashero_Api
             $wildcard = true;
             }
              
+            $data = array(
+                'domain' => $domain,
+                'wildcard' => $wildcard
+            );
+            $fields_string = http_build_query($data);
+
             $ch = curl_init();            
 
             // set header with token 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , 'Accept: application/json', $authorization ));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Accept: application/json', $authorization ));
             // set url 
-            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL. $endpoint. WAASHERO_CLIENT_SERVER_ID ); 
+            curl_setopt( $ch, CURLOPT_URL, $url ); 
 
             //return the transfer as a string 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            // curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
+            // curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_POST, true); 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, 'domain='.urlencode ( $domain ). '&wildcard='.urlencode ( $wildcard ) ); 
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string ); 
 
             // $output contains the output string 
             $output = curl_exec($ch); 
-
+            
             // close curl resource to free up system resources 
             curl_close( $ch );      
 
-
             $result = json_decode( $output, true );
-
-            return $result; 
+          
+            return null; 
         }
         catch( Exception $e ) {
-            return   array('success'  => false, 'error'=> 'unknown');;
+            return null;
         }
          
      }
 
      public static  function GetBackups(){
           
-        $endpoint = 'backups/'; //must include endslash
+        $endpoint = '/backups/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
@@ -153,7 +159,7 @@ class Waashero_Api
      public static  function GetCdnCacheInvalidation(){
          
 
-        $endpoint = 'cdncacheinvalidation/'; //must include endslash
+        $endpoint = '/cdncacheinvalidation/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
@@ -194,7 +200,7 @@ class Waashero_Api
 
      public static  function ManualBackup(){
          
-        $endpoint = 'manualbackup/'; //must include endslash
+        $endpoint = '/manualbackup/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
@@ -238,7 +244,7 @@ class Waashero_Api
      public static  function FlushGoogleCdn(){
          
 
-        $endpoint = 'flushgooglecdn/'; //must include endslash
+        $endpoint = '/flushgooglecdn/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
@@ -281,7 +287,7 @@ class Waashero_Api
      public static  function GetTaskStatus($id){
          
 
-        $endpoint = 'taskstatus/'; //must include endslash
+        $endpoint = '/taskstatus/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
