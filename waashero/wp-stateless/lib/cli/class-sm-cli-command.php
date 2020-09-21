@@ -288,5 +288,4 @@ if( defined( 'WP_CLI' ) && WP_CLI ) {
 
   /** Add the commands from above */
   WP_CLI::add_command( 'waasheros', 'SM_CLI_Command' );
-
 }
