@@ -93,7 +93,7 @@ if( !function_exists( 'ud_stateless_media_message' ) ) {
   add_action( 'admin_notices', 'ud_stateless_media_message' );
 }
 
-if( ud_check_stateless_media() ) {
+if( defined( 'sm_bucket' ) && ud_check_stateless_media() ) {
   //** Initialize. */
   ud_get_stateless_media();
 }
