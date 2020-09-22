@@ -10,9 +10,6 @@ class Waashero {
         new self();
     }
 
-
-
-
     public function __construct() {
 
 
@@ -20,22 +17,9 @@ class Waashero {
         // Add hook to the new blog/subsite creation to create a DNS record
         add_action('wp_insert_site', array($this, 'createRecordForNewSubsite') );
 
-        //add_action( 'upgrader_process_complete', array(&$this,'flush_cache_after_wp_update'), PHP_INT_MAX, 2 );     
-
-        // //disable updates
-        add_filter( 'pre_site_transient_update_core', array($this, 'remove_core_updates') );
         add_action( 'admin_enqueue_scripts', array(&$this, 'waashero_requirements_enqueue_scripts'));
-        // add_filter( 'auto_core_update_send_email', '__return_false' );                                 // mute core update send email
-        // add_filter( 'send_core_update_notification_email', '__return_false' );                        // mute core update email
-        // add_filter('cron_schedules',array($this, 'waashero_cron_schedules'));      
-
-        // if (!wp_next_scheduled ( 'waashero_10_minutes_cron' )) {
-        //     wp_schedule_event(time(), '10min', 'waashero_10_minutes_cron');
-        // }
-        // add_action('waashero_10_minutes_cron', array($this, 'waashero_10min_cron'));
-        // add_action('wp_logout', array($this, 'waashero_dynamic_ip_whitelist_clear_logout'));
-
-
+                  // mute core update email
+       
         // //cache plugins        
         // if(method_exists('LiteSpeed_Cache_API','hook_control')){
         //     LiteSpeed_Cache_API::hook_control( array( &$this, 'enable_micro_cache_and_304' ) ) ; 
@@ -52,45 +36,12 @@ class Waashero {
         // add_filter( 'rocket_buffer',array(&$this, 'waashero_third_party_is_cacheable_wp_rocket'), 10, 1 );
         // add_filter( 'w3tc_pagecache_set', array(&$this, 'waashero_third_party_is_cacheable_w3tc'), 10, 2 );         
 
-        // //smtp
-        // add_action( 'phpmailer_init', array(&$this, 'waashero_smtp'), PHP_INT_MAX );
-
-
-        // //wp ultimo IP address
-        // add_filter( 'wu_get_setting',array(&$this, 'waashero_wu_get_setting'), 10, 3 );
-
-        
-       
-
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR ( defined('DOING_CRON') && DOING_CRON) OR ( defined('DOING_AJAX') && DOING_AJAX) OR ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
           
             
             if(( defined('DOING_AJAX') && DOING_AJAX)){
                 if($this::user_can_manage_admin_settings() && is_admin()){
-                    add_action( 
-                        'wp_ajax_waashero_create_backup', 
-                        array( 
-                            'Waashero_Ajax', 
-                            'waashero_create_backup' 
-                        )
-                    );
-
-                    add_action( 
-                        'wp_ajax_waashero_get_task_status', 
-                        array( 
-                            'Waashero_Ajax', 
-                            'waashero_get_task_status' 
-                        )
-                    );
-
-                    add_action( 
-                        'wp_ajax_waashero_cdn_invalidation', 
-                        array( 
-                            'Waashero_Ajax', 
-                            'waashero_cdn_invalidation' 
-                        )
-                    );
-
+                    
                     add_action(
                         'wp_ajax_waashero_add_domain_alias', 
                         array( 
@@ -117,19 +68,7 @@ class Waashero {
                    
              Waashero_Settings::update();            
         }
-
-        if( current_user_can('editor') || current_user_can('administrator') ) {
-            self::waashero_dynamic_ip_whitelist(); 
-        }
-
-
-      
-        //$options = Waashero_Options::get_options();      
-
-        
-      
-
-
+   
 
         if( $this::user_can_manage_admin_settings() && ( is_network_admin() || is_admin())) {
 
@@ -153,20 +92,6 @@ class Waashero {
                 )
             );
 
-
-            if( defined('HIDE_WAASHERO_PLUGIN') && HIDE_WAASHERO_PLUGIN){
-                
-            } else {
-                //add_action( 'wp_before_admin_bar_render', array(__CLASS__,'waashero_bar_menu'), 100 );
-                //add_action( $menu_type, array(__CLASS__,'waashero_menu'), 100 );
-            }
-
-          
-
-          
-         
-          
-
             add_action( 
                 'current_screen',  
                 array(
@@ -178,28 +103,7 @@ class Waashero {
             self::admin_notice_development_mode();  
             
         }
-
-
-
-        /* admin notices */
-        add_action(
-            'after_setup_theme', 
-            array(
-                __CLASS__,
-                'waashero_autologin'
-            )
-        );
-
-        add_filter( 
-            'waashero_final_output',
-            array(
-                &$this, 
-                'parse_final_output'
-            ), 
-            PHP_INT_MAX, 
-            1 
-        );      
-
+    
     }
 
 
@@ -231,49 +135,6 @@ class Waashero {
         //restore_current_blog();
     }
 
-
-    function parse_final_output( $output ) {
-                   
-        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-        
-        if (!is_plugin_active( 'litespeed-cache/litespeed-cache.php' ) ) {
-            return apply_filters( 'waashero_cdn_rewrite_final_output', $output);
-        }
-        
-        if ( is_user_logged_in() ) {
-            return apply_filters( 'waashero_cdn_rewrite_final_output', $output);
-        }
-
-        $is_cacheable = self::waashero_is_cacheable_header_set(headers_list());
-
-        if(!$is_cacheable){
-            return apply_filters( 'waashero_cdn_rewrite_final_output', $output);
-        }
-
-
-        $is_html = self::checkIsHtml($output);
-
-        if (!$is_html) { //cacheable and is HTML
-
-           return apply_filters( 'waashero_cdn_rewrite_final_output', $output);
-        }
-
-
-        
-        
-        $options = Waashero_Options::get_options();  
-        if($options && $options["enable_cdn"] == 1){
-            $options = Waashero_Options::get_options();
-            $excludes = array_map('trim', explode(',', $options['excludes']));
-            $rewriter = new Waashero_Rewriter($excludes);
-            $output = $rewriter->rewrite($output);                
-            
-        }
-
-
-        return apply_filters( 'waashero_cdn_rewrite_final_output', $output);
-
-    }
 
     function checkIsHtml( $buffer ) {
 
@@ -322,24 +183,11 @@ class Waashero {
 
      }
 
-     function waashero_third_party_is_cacheable_w3tc( $data, $this_page_key ) {
+    function waashero_third_party_is_cacheable_w3tc( $data, $this_page_key ) {
         header( 'X-Cacheable: yes', true );
 
         return $data; 
-     }
-
-    
-
-
-    // function waashero_wu_get_setting( $setting_value, $setting, $default ) {
-        
-    //     if( $setting == 'network_ip' && defined( 'WAASHERO_PUBLIC_IP_ADDRESS' ) ) {
-    //         return WAASHERO_PUBLIC_IP_ADDRESS;     
-    //     }
-
-    //     return $setting_value;
-    // }
-   
+    }
 
     public static function user_can_manage_admin_settings() {
 
@@ -352,142 +200,6 @@ class Waashero {
 
         return false;
     }
-
-
-
-    function flush_cache_after_wp_update( $array, $int ) {
-        //opcache_reset(); we have to define this
-        wp_cache_flush();
-        if( function_exists( 'apcu_clear_cache' ) ) {                   
-            apcu_clear_cache();
-        }
-    }
-
-    static function waashero_bar_menu() {
-        global $wp_admin_bar;
-        
-
-
-        if( is_multisite() ) {
-
-            if( !is_main_site() ) {
-                $global_options = Waashero_Options::get_options( true );
-
-                if( $global_options['allow_per_site_config'] == 0 ) {
-
-                    return;
-                }
-            }
-
-           
-        }
-
-        $label = 'Waashero';
-
-         if( is_multisite() ) {
-
-            if( !is_main_site() ) {
-                $label ='Hosting';
-            }
-         }
-
-        $wp_admin_bar->add_menu( array(
-            'id'    => 'waashero_top_bar',
-            'title' => __( $label, 'waashero' ),
-            'href'  => 'admin.php?page=waashero_main_menu' 
-            )
-        );
-
-        $flush_url  = add_query_arg( array( 'waashero_flush_cache_action' => 'flush_waashero_caches' ) );
-        $nonced_url = wp_nonce_url( $flush_url, 'waashero_top_bar_action' );
-
-        $wp_admin_bar->add_menu( array(
-            'id'     => 'waashero_top_bar_flush_opcache',
-            'parent' => 'waashero_top_bar',
-            'title'  => __( 'Clear OPcache & Object-Cache', 'waashero' ),
-            'href'   => $nonced_url
-            )
-        );
-
-        
-        $wp_admin_bar->add_menu( array(
-            'id'     => 'waashero_top_bar_flush_cdn',
-            'parent' => 'waashero_top_bar',
-            'title'  => __( 'Clear CDN cache', 'waashero' ),
-            'href'   => 'admin.php?page=waashero_main_menu.cdn-invalidation'
-            )
-        );
-        
-
-
-        $wp_admin_bar->add_menu( array(
-             'id'    => 'waashero_top_bar_settings',
-            'parent' => 'waashero_top_bar',
-            'title'  => __( 'Settings', 'waashero' ),
-            'href'   =>'admin.php?page=waashero_main_menu' 
-            )
-        );
-                      
-
-    }
-   
-    static function waashero_menu() {      
-
-        $label = 'Waashero';
-        $add_all_pages = true;  
-        $settings_page_type = is_network_admin() ? 'network_settings_page':'settings_page';
-
-        if( is_multisite() ) {
-
-            if( !is_main_site() ) {
-                $label = 'Hosting';
-                $add_all_pages = false;
-                $global_options = Waashero_Options::get_options(true);
-                $settings_page_type = 'subsite_settings_page';
-
-                if( $global_options['allow_per_site_config'] == 0 ) {
-                    return;
-                }
-            }
-            
-        }
-
-
-        $icon = 'dashicons-menu';
-        add_menu_page(
-            'Waashero Cloud Management', 
-            $label, 
-            'read', 
-            'waashero_main_menu', 
-            array(
-                'Waashero_Settings',
-                $settings_page_type
-            ),
-            $icon,
-            1
-        ); 
-        add_submenu_page( 
-            'waashero_main_menu', 
-            "Settings", 
-            'Settings', 
-            'read', 
-            'waashero_main_menu', 
-            array(
-                'Waashero_Settings',
-                $settings_page_type
-            )
-        );
-        add_submenu_page('waashero_main_menu', "CDN Invalidation", 'CDN Invalidation', 'read', 'waashero_main_menu.cdn-invalidation', array('Waashero_Settings','cdn_invalidation_page'));
-
-        if($add_all_pages){
-            add_submenu_page( 'waashero_main_menu', "Backups", 'Backups', 'read', 'waashero_main_menu.backups', array('Waashero_Settings','backups_page'));           
-            add_submenu_page('waashero_main_menu', "Domains", 'Domains', 'read', 'waashero_main_menu.domains', array('Waashero_Settings','domains_page'));   
-        }
-       
-       
-
-    }
-   
 
 
     // Where we handle OPcache flush action
@@ -547,12 +259,7 @@ class Waashero {
               
             }
         }
-
-       
-
-
-      
-       
+  
     }
 
 
@@ -560,16 +267,6 @@ class Waashero {
         $class = 'notice notice-warning';
         $message = 'Development mode is enabled and many performance & security features are disabled. <a href="'.menu_page_url('waashero_main_menu',false).'">Disable Development Mode</a>';
         printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ),  $message );
-    }
-   
-
-    public function remove_core_updates() {
-        global $wp_version;
-        return (object) array(
-                'last_checked'          => time(),
-                'updates'               => array(),
-                'version_checked'       => $wp_version
-        );
     }
 
     function waashero_requirements_enqueue_scripts($hook) {
@@ -579,26 +276,12 @@ class Waashero {
 	    }
     }
 
-
-    function waashero_cron_schedules($schedules){
-
-        if(!isset($schedules["10min"])){
-            $schedules["10min"] = array(
-                'interval' => 10*60,
-                'display' => __('Once every 10 minutes'));
-        }
-        
-        return $schedules;
-    }
-
-  
-
     function waashero_dynamic_ip_whitelist(){
         
         $option_key = 'waashero_dynamic_ip_whitelist';
         $user_ip = $_SERVER["REMOTE_ADDR"];
 
-        if(empty($user_ip) || $user_ip == '127.0.0.1'){
+        if( empty($user_ip) || $user_ip == '127.0.0.1' ) {
             return;
         }
 
@@ -660,70 +343,7 @@ class Waashero {
             self::insert_htaccess_rules();
         }
     }
-    function waashero_dynamic_ip_whitelist_clear(){
-        
-        $option_key = 'waashero_dynamic_ip_whitelist';       
-        $should_update_htaccess = false;       
-
-        $whitelisted = false;
-        if( get_site_option( $option_key ) != NULL ) {
-            $whitelisted = get_site_option( $option_key );
-        }
-        if(!$whitelisted || !is_array($whitelisted)){
-            $whitelisted = array();
-        }
-
-        $now =  new DateTime();
-        $save = false;
-        foreach ($whitelisted as $key => $value){
-            
-            
-            if($value < $now){
-                unset($whitelisted[$key]);
-                $should_update_htaccess = true;
-                $save = true;
-            }
-            
-        }
-
-        if($save == true){
-            update_site_option($option_key,$whitelisted);
-        }
-
-        if($should_update_htaccess == true){
-            self::insert_htaccess_rules();
-        }
-    }
-    function waashero_dynamic_ip_whitelist_clear_logout(){
-        
-        $option_key = 'waashero_dynamic_ip_whitelist';     
-        $user_ip = $_SERVER["REMOTE_ADDR"];
-
-        if(empty($user_ip)){
-            return;
-        }
-
-        $whitelisted = false;
-        if( get_site_option( $option_key ) != NULL ) {
-            $whitelisted = get_site_option( $option_key );
-        }
-        if(!$whitelisted || !is_array($whitelisted)){
-            $whitelisted = array();
-        }
-
-         if(array_key_exists($user_ip,$whitelisted)){
-             unset($whitelisted[$user_ip]);
-             update_site_option($option_key,$whitelisted);
-             self::insert_htaccess_rules();
-         }      
-
-      
-    }
-
-    function waashero_10min_cron(){
-        self::waashero_dynamic_ip_whitelist_clear();
-    }
-
+   
     function enable_micro_cache_and_304() {
 
        
@@ -743,61 +363,6 @@ class Waashero {
 
     }
 
-
-    function waashero_smtp(&$phpmailer) {
-
-
-
-      
-
-        $options =  Waashero_Options::get_options();   
-
-       
-
-        
-        if ($options['smtp_configured'] == 0 || $options['smtp_enabled'] == 0 ) {
-            return;
-        }
-  
-        /* Set the mailer type as per config above, this overrides the already called isMail method */
-        $phpmailer->IsSMTP();
-
-
-
-        if ( isset( $options[ 'smtp_from_name' ]) &&  ! empty( $options[ 'smtp_from_name' ] )  && $options[ 'smtp_force_from_name' ] === 1 ) {
-            $from_name = $options[ 'smtp_from_name' ];
-        } else {
-            $from_name = ! empty( $phpmailer->FromName ) ? $phpmailer->FromName : $options[ 'smtp_from_name' ];
-        }
-
-        $from_email = $options[ 'smtp_from_email'] . '@'.$options[ 'smtp_configured_domain'];
-      
-        if ( ! empty( $options[ 'smtp_reply_to_email' ] ) ) {
-            $phpmailer->AddReplyTo( $options[ 'smtp_reply_to_email' ], $from_name );
-        }
-       
-        $phpmailer->From	 = $from_email;
-        $phpmailer->FromName	 = $from_name;
-        $phpmailer->SetFrom( $phpmailer->From, $phpmailer->FromName );
-       
-
-        /* Set the other options */
-        $phpmailer->SMTPSecure = 'tls';
-        $phpmailer->Host = 'smtp.mailgun.org';
-        $phpmailer->Port = '2525';
-        $phpmailer->SMTPAuth	 = true;
-        $phpmailer->Username	 =  $options['smtp_username'];
-        $phpmailer->Password	 =  $options['smtp_password'];      
-        $phpmailer->SMTPAutoTLS = true;
-
-      
-        if(defined("WAASHERO_DEVELOPMENT_MODE") && !empty( $options[ 'smtp_dev_rec_add' ] ) ){
-            $phpmailer->ClearAllRecipients();
-            $phpmailer->addAddress($options[ 'smtp_dev_rec_add' ], 'Staging Environment');
-        }
-       
-
-    }
 
     private static function format_message($mesg,$tag)
 	{
@@ -852,7 +417,11 @@ class Waashero {
 
 
    
-
+/**
+ * needs to bre removed
+ *
+ * @return void
+ */
     public static function waashero_autologin() {
 
 
@@ -972,9 +541,6 @@ class Waashero {
         return $local_timestamp;
     }
   
-
-
-
     public static function insert_htaccess_rules()
 	{
 
@@ -982,93 +548,6 @@ class Waashero {
         array_push($insertion,'RewriteEngine On');
 
         $global_options = Waashero_Options::get_options(true);
-
-        if(is_multisite() && $global_options['allow_per_site_config'] == 1){
-
-            //$args = array('limit'=>1000);
-            //$sites = array();
-
-            //if(function_exists('get_sites')){
-            //    $sites = get_sites($args);
-            //}else if(function_exists('wp_get_sites')){
-
-            //    $sites = wp_get_sites($args);
-            //}
-
-            //if($sites){
-
-            //    foreach ($sites as $site) {
-
-                    
-
-            //        $blog_id = 0;
-
-            //        if(is_array($site)){
-            //            $blog_id = $site['blog_id'];
-            //        }else{
-            //            $blog_id = $site->blog_id;
-            //        }
-                    
-                    
-
-            //        switch_to_blog($blog_id);                   
-            //        $options = Waashero_Options::get_options();
-
-            //        if($options['development_mode'] == 1){
-
-            //            //$domains = self::get_subsite_domains($blog_id);                     
-
-            //            //foreach ($domains as $domain) {
-            //            //     array_push($insertion,
-            //            //         'RewriteCond %{HTTP_HOST} ^'.$domain.' [NC]',
-            //            //         "RewriteRule .* - [E=noconntimeout:1]"                         
-            //            //           );
-
-
-            //            //      if($options['development_mode'] == 1){
-            //            //    array_push($insertion,
-            //            //        'RewriteCond %{HTTP_HOST} ^'.$domain.' [NC]',
-            //            //        "RewriteRule .* - [E=Cache-Control:no-cache]"                                    
-            //            //                 );
-            //            //       }
-                                            
-            //            //}
-                        
-            //        }   
-                    
-
-            //        restore_current_blog();
-            //    }
-            //} 
-
-
-          
-
-          
-            
-        }else if((is_multisite() && is_main_site()) || !is_multisite()){
-
-            //$options =  Waashero_Options::get_options();
-
-            //if($options['development_mode'] == 1){
-                
-            //    array_push($insertion,
-            //        "SecFilterEngine Off",
-            //        "SecFilterScanPOST Off",
-            //        "RewriteEngine On",
-            //        "RewriteRule .* - [E=noconntimeout:1]"                 
-            //        );
-
-            //    if($options['development_mode'] == 1){
-            //        array_push($insertion,
-            //     "CacheDisable public /",
-            //    "CacheDisable private /"                
-            //       );
-            //    }
-               
-            //}
-        }
-
 
         $whitelisted = get_site_option('waashero_dynamic_ip_whitelist');
         if(!$whitelisted || !is_array($whitelisted)){
@@ -1235,39 +714,5 @@ class Waashero {
         return false;
     }
 
-
-
-    function get_subsite_domains($blog_id){
-        global $wpdb;
-        
-        try{
-
-
-            $default_site_url = get_site_url($blog_id);
-            $domains = array();
-            array_push($domains,parse_url($default_site_url, PHP_URL_HOST));
-
-            try{
-                $query = "SELECT * FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = {$blog_id}";
-                $results = $wpdb->get_results($query, OBJECT );
-
-                
-
-                if($results){
-                    foreach ($results as $d) {
-                        array_push($domains,$d->domain);
-                    }
-                }
-            }catch(Exception $e){
-                
-            }
-           
-            return $domains;  
-        }
-        catch(Exception $e){
-            return array();
-        }
-       
-    }
 }
 

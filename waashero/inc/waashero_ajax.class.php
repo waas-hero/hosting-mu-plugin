@@ -11,54 +11,6 @@ defined('ABSPATH') OR exit;
 class Waashero_Ajax
 {
 
-    public static function waashero_create_backup(){
-
-        $result = array('success'  => false);
-        $task = Waashero_Api::ManualBackup();
-       
-
-        
-        if(!is_null($task)){
-            $result['success'] = true;
-            $result['taskid'] = $task;
-        }
-
-        wp_send_json($result); 
-    }
-
-    public static function waashero_get_task_status(){
-
-
-        $id = $_POST['waashero_task_id'];
-
-        $result = array('success'  => false);
-        $task = Waashero_Api::GetTaskStatus($id);
-        
-        if(!is_null($task)){
-            $result['success'] = true;
-            $result['task'] = $task;
-        }
-
-        wp_send_json($result);       
-    }
-
-
-    public static function waashero_cdn_invalidation(){
-
-
-        
-
-        $result = array('success'  => false);
-        $task = Waashero_Api::FlushGoogleCdn();
-        
-        if(!is_null($task)){
-            $result['success'] = true;
-            $result['taskid'] = $task;
-        }
-
-        wp_send_json($result);       
-    }
-    
     /**
      * Calls function to add domain alias
      *
