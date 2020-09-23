@@ -48,22 +48,28 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
  * @param string 'wp_rocket_loaded'         Hook name to hook function into
  * @param string 'yourprefix__do_something' Function name to be hooked
  */
+function waas_hero_mu_init() {
+    if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
+        $file = fopen( WPMU_PLUGIN_DIR. "/waashero-config.php", 'a' );
+        fclose( $file );
+        file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_bucket', 'wb-storage' );\n" );
+    }
+    global $wpdb;
+    $table_name = $wpdb->options;
+    $query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) );
 
-$dir = trim( ABSPATH );
-if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
-    $file = fopen( WPMU_PLUGIN_DIR. "/waashero-config.php", 'a' );
-    fclose( $file );
-    file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_bucket', 'wb-storage' );\n" );
-}
-global $wpdb;
-$table_name = $wpdb->options;
-$query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) );
+    if ( !class_exists( 'WU_Domain_Mapping_Hosting_Support' ) && class_exists('WP_Ultimo') ) {
+        require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+    }
 
-if ( !wp_installing() && $table_name && $wpdb->get_var( $query ) == $table_name ) {
-    require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
-    require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
+    if ( !wp_installing() && $table_name && $wpdb->get_var( $query ) == $table_name ) {
+        require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
+        require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
+    }
+
+    if( !class_exists( 'WPConfigTransformer' ) && file_exists( WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php' ) ) {
+        require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
+    }
 }
 
-if( !class_exists( 'WPConfigTransformer' ) && file_exists( WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php' ) ) {
-    require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
-}
+add_action( 'plugins_loaded', 'waas_hero_mu_init' );

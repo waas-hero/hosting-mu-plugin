@@ -22,7 +22,7 @@ class Waashero_Api
      */
      public static  function GetDomains() {
         
-        $endpoint = '/domains/'; //must include endslash
+        $endpoint      = '/domains/'; //must include endslash
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
 
          try{
