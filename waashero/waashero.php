@@ -49,16 +49,17 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	}
 }
 
-
- $class = 'Waashero_Hosting_Support';
-require (sprintf(
-	'%s/inc/%s.class.php',
-	WAASHERO_DIR,
-	strtolower( $class )
-));
+if ( class_exists( 'WP_Ultimo' ) && class_exists( 'WU_Domain_Mapping_Hosting_Support' ) ) {
+	$class = 'Waashero_Hosting_Support';
+	require ( sprintf(
+		'%s/inc/%s.class.php',
+		WAASHERO_DIR,
+		strtolower( $class )
+	));
+}
 /* autoload function */
 function Waashero_autoload( $class ) {
-	if ( in_array( $class, array( 'Waashero', 'Waashero_Hosting_Support', 'Waashero_Rewriter', 'Waashero_Settings', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' ) ) ) {
+	if ( in_array( $class, array( 'Waashero', 'Waashero_Rewriter', 'Waashero_Settings', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' ) ) ) {
 		require_once(
 			sprintf(
 				'%s/inc/%s.class.php',
