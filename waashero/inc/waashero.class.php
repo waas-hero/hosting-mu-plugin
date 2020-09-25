@@ -50,6 +50,14 @@ class Waashero {
                         )
                     );
 
+                    add_action(
+                        'wp_ajax_waashero_notifications',
+                        array(
+                            'Waashero_Ajax',
+                            'waashero_notifications'
+                        )
+                    );
+
                     add_action( 
                         'wp_ajax_waashero_welcome_tour', 
                         array( 

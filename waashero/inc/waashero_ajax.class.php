@@ -32,6 +32,12 @@ class Waashero_Ajax
         $result = array('success'  => true);
         wp_send_json($result);   
     }
+
+    public static function waashero_notifications() {
+
+        $result = Waashero_Api::getWaasheroNotifications();
+         wp_send_json( $result );
+    }
 }
 
 return new Waashero_Ajax();
