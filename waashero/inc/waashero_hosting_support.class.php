@@ -171,3 +171,5 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     } // end add_domain_to_waas_builder;
 
 } // end class WU_Domain_Mapping_Hosting_Support;
+
+return new WH_Domain_Mapping_Hosting_Support();

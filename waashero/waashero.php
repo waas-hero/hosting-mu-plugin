@@ -20,25 +20,17 @@ if( !defined( 'WAASHERO_CDN_HOSTNAME' ) ) {
 	define( 'WAASHERO_CDN_HOSTNAME', "xyz.com" );
 }
 
-if( !defined( 'WAASHERO_CLIENT_API_KEY' ) ) {
-	define( 'WAASHERO_CLIENT_API_KEY', "xyzabc" );
+$classes = array( 'Waashero_Settings', 'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' );
+foreach( $classes as $class ) {
+	if ( file_exists( WAASHERO_DIR.'/inc/'. strtolower( $class ).'.class.php' ) ) {
+		require ( sprintf(
+			'%s/inc/%s.class.php',
+			WAASHERO_DIR,
+			strtolower( $class )
+		));
+	}
 }
 
-/* loader */
-add_action(
-	'plugins_loaded',
-	array(
-		'Waashero',
-		'instance'
-	)
-);
-
-
-
-
-
-/* autoload init */
-spl_autoload_register('Waashero_autoload');
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
@@ -56,18 +48,5 @@ if ( class_exists( 'WP_Ultimo' ) && class_exists( 'WU_Domain_Mapping_Hosting_Sup
 		WAASHERO_DIR,
 		strtolower( $class )
 	));
-}
-/* autoload function */
-function Waashero_autoload( $class ) {
-	if ( in_array( $class, array( 'Waashero', 'Waashero_Rewriter', 'Waashero_Settings', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' ) ) ) {
-		require_once(
-			sprintf(
-				'%s/inc/%s.class.php',
-				WAASHERO_DIR,
-				strtolower( $class )
-			)
-		);
-	}
-   
 
 }

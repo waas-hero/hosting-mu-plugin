@@ -33,3 +33,5 @@ class Waashero_Ajax
         wp_send_json($result);   
     }
 }
+
+return new Waashero_Ajax();

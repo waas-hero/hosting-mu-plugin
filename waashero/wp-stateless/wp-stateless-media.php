@@ -11,9 +11,7 @@
  * Copyright 2012 - 2019 Usability Dynamics, Inc.  ( email: info@usabilitydynamics.com )
  *
  */
-if(!defined("WAASHERO_APP_ID")){
-  define("WAASHERO_APP_ID", '' );
-}
+
 if( !function_exists( 'ud_get_stateless_media' ) ) {
 
   /**

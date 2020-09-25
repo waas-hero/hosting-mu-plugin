@@ -208,3 +208,5 @@ class Waashero_Settings
     }
     
 }
+
+return new Waashero_Settings();

@@ -8,9 +8,6 @@ if( defined('DISABLE_WAASHERO_PLUGIN') && DISABLE_WAASHERO_PLUGIN ) {
     return;
 }
 
-if(!defined("WAASHERO_APP_ID")){
-    define("WAASHERO_APP_ID", '' );
-}
 
 if(!defined( "LITESPEED_DISABLE_OBJECT" )){
     define("LITESPEED_DISABLE_OBJECT",true);

@@ -96,3 +96,4 @@ class Waashero_Options {
     }
 
 }
+return new Waashero_Options();

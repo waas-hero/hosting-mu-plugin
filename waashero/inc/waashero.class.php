@@ -99,8 +99,8 @@ class Waashero {
                     'render_tour'
                 ) 
             );     
-
-            self::admin_notice_development_mode();  
+            // future use to add development mode
+            //self::admin_notice_development_mode();  
             
         }
     
@@ -416,12 +416,12 @@ class Waashero {
     }
 
 
-   
-/**
- * needs to bre removed
- *
- * @return void
- */
+    //still need to work on it
+    /**
+     * needs to bre removed
+     *
+     * @return void
+     */
     public static function waashero_autologin() {
 
 
@@ -490,7 +490,7 @@ class Waashero {
                             }else{
                                 header("HTTP/1.1 200 OK");
                                 header( 'Content-Type: text/html; charset=utf-8' );
-                                echo '<strong>ERROR:</strong> User with '.$wp_user.' username or email address does not exist. Go to <a href="https://app.waashero.com/sites/settings/'.WAASHERO_APP_ID.'">Site->Settings page</a> and change the auto login username.';
+                                echo '<strong>ERROR:</strong> User with '.$wp_user.' username or email address does not exist. Go to <a href="https://app.waashero.com/sites/settings/'.WAASHERO_CLIENT_API_KEY.'">Site->Settings page</a> and change the auto login username.';
                                 exit( 1 );
                             }
 
@@ -565,7 +565,7 @@ class Waashero {
         array_push($insertion,'');
 
         $marker = "WAASHERO";
-        $filename = '/home/'.WAASHERO_APP_ID .'/public_html/.htaccess';
+        $filename = '/home/'.WAASHERO_CLIENT_API_KEY .'/public_html/.htaccess';
 
 		if ( ! file_exists($filename) ) {
 			if ( ! is_writable( dirname($filename) ) ) {
@@ -716,3 +716,4 @@ class Waashero {
 
 }
 
+return new Waashero();

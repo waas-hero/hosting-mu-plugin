@@ -15,7 +15,7 @@ else if (defined('WP_CLI') && WP_CLI)
 {
     $use_object_cache = false;
 }
-else if (!defined("WAASHERO_APP_ID"))
+else if (!defined("WAASHERO_CLIENT_API_KEY"))
 {
     $use_object_cache = false;
 }

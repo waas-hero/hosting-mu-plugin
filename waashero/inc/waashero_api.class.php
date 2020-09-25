@@ -10,7 +10,7 @@ defined('ABSPATH') OR exit;
  */
 class Waashero_Api
 {
-
+    
     
     /**
      * waashero_api Gets all domains for a server.
@@ -117,3 +117,5 @@ class Waashero_Api
 
     
 }
+
+return new Waashero_Api();

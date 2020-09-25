@@ -193,3 +193,5 @@ class Waashero_WP_CLI {
    
    
 }
+
+return new Waashero_WP_CLI();
