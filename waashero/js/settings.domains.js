@@ -56,21 +56,42 @@ function myAdminNotice(msg,level) {
 }
 
 
+/*
+* Load All notifications
+*/
+function loadPendingNotifications(){
+
+    var data = {
+        'action': 'waashero_notifications',
+    };
+    jQuery.post( ajaxurl, data, function ( response ) {
+        response = JSON.parse(response);
+        if (response.success && response.messages){
+            jQuery.each(response.messages, function( level, message ) {
+                myAdminNotice(message, level);
+            });
+        }else{
+            //myAdminNotice( response.message, "error" );
+            return false;
+        }
+    });
+
+}
+
+
 jQuery( document ).ready(function ($) {
 
-
-     $("#wu-custom-domain").one('submit', function(e) {
+       loadPendingNotifications();
+      $("#wu-custom-domain").one('submit', function(e) {
 
         e.preventDefault();
         let domain_name = $('input[name="custom-domain"]').val();
+
         if(!domain_name){
+           $(".sa-button-container .cancel").trigger("click");
             return false;
         }
         let form_object =  $(this);
-        //var submitBtn = $(this);
-        //submitBtn.hide();
-        //$("<img class='waashero-loader' src='/wp-admin/images/loading.gif'>").insertAfter(submitBtn);
-
         var data = {
             'action': 'waashero_add_domain_alias',
             'domain': domain_name
@@ -78,12 +99,14 @@ jQuery( document ).ready(function ($) {
         jQuery.post( ajaxurl, data, function ( response ) {
              response = JSON.parse(response);
              if ( response.success ){
-                //location.reload();
-                $(form_object).submit();
+                 $(".sa-button-container .cancel").trigger("click");
+                  myAdminNotice( response.message, "success");
+                //$(form_object).submit();
+                 $(form_object)['0'].reset();
             }else{
-                myAdminNotice( response.error, "error" );
-                $('.waashero-loader').remove();
-               /// submitBtn.show();
+               $(".sa-button-container .cancel").trigger("click");
+               myAdminNotice( response.message, "error" );
+               return false;
             }
         });
     });
