@@ -21,7 +21,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     public function __construct() {
 
         /**
-         * Closte.com Support
+         * Wp builder pro.com Support
          * @since 1.7.3
          */
         if ( $this->uses_waas_builder() ) {
@@ -38,23 +38,23 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
                 20 
             );
 
-            add_action(
-                'mercator.mapping.deleted', 
-                array( $this, 'remove_domain_from_waas_builder'), 
-                20 
-            );
+            // add_action(
+            //     'mercator.mapping.deleted', 
+            //     array( $this, 'remove_domain_from_waas_builder'), 
+            //     20 
+            // );
 
-            add_action(
-                'wu_custom_domain_after', 
-                array( $this, 'display_waas_builder_domain_status' ) 
-            );
+            // add_action(
+            //     'wu_custom_domain_after', 
+            //     array( $this, 'display_waas_builder_domain_status' ) 
+            // );
 
         } // end if;
 
     } // end construct;
 
     /**
-     * Display the Closte Domain Status
+     * Display the Wp builder pro Domain Status
      *
      * @since 1.7.3
      * @param string $domain
@@ -73,7 +73,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     } // end display_waas_builder_domain_status;
 
     /**
-     * Checks if this site is hosted on Closte.com or not
+     * Checks if this site is hosted on Wp builder pro.com or not
      *
      * @since 1.7.3
      * @return bool
@@ -85,49 +85,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     } // end uses_waas_builder;
 
     /**
-     * Sends a request to Closte, with the right API key
-     *
-     * @since  1.7.3
-     * @param  string $endpoint Endpoint to send the call to
-     * @param  array  $data     Array containing the params to the call
-     * @return object
-     */
-    public function send_waas_builder_api_request( $endpoint, $data ) {
-
-        $post_fields = array(
-        'blocking'    => true,
-        'timeout'     => 45,
-        'method'      => 'POST',
-        'body'        => array_merge(array(
-            'apikey'       => WAASHERO_CLIENT_API_KEY,
-            ), $data )
-        );
-
-        $response = wp_remote_post( WAASHERO_CLIENT_API_URL.$endpoint, $post_fields );
-
-        if ( !is_wp_error( $response ) ) {
-            
-            $body = json_decode(wp_remote_retrieve_body($response), true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-
-                return $body;
-
-            } // end if;
-
-            return ( object ) array(
-                'success' => false, 
-                'error'   => 'unknown'
-            );
-
-        } // end if;
-
-        return $response;
-
-    } // end send_waas_builder_api_request;
-
-    /**
-     * Sends call to Closte to add the new domain
+     * Sends call to Wp builder pro to add the new domain
      *
      * @since 1.7.3
      * @param Mercator\Mapping $mapping
@@ -141,15 +99,12 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
                 return;
         }      
 
-        $this->send_waas_builder_api_request( '/domains/', array(
-            'domain'   => $domain,
-            'wildcard' => strpos( $domain, '*.' ) === 0
-        ));
+        Waashero_Api::AddDomainAlias( $domain );
 
     } // end add_domain_to_waas_builder;
 
     /**
-     * Sends call to Closte to remove a domain
+     * Sends call to Wp builder pro to remove a domain
      *
      * @since 1.7.3
      * @param Mercator\Mapping $mapping

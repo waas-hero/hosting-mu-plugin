@@ -76,49 +76,59 @@ class Waashero_Api
          $domain_notification_response = [];
 
          $response =  self::AddDomainAliasHandler($domain , 'POST' ,  $endpoint);
-         if(!empty($response)){
+         if( !empty( $response ) ) {
             $domain_notification_response['success'] = $response;
             // Confirm SSL Certificate
             $attempt = 1;
             $endpoint = '/sslcert';
-            while($attempt < 4){
-                sleep($attempt*7);
-                $ssl_response =  self::AddDomainAliasHandler($domain , 'GET' ,  $endpoint);
-                $ssl_response = json_decode($ssl_response , true);
-                if(!empty($ssl_response['code']) && $ssl_response['code'] == '200'){
+            while( $attempt < 4 ) {
+                sleep( $attempt*7 );
+                $ssl_response =  self::AddDomainAliasHandler( $domain , 'GET' ,  $endpoint);
+                $ssl_response = json_decode( $ssl_response , true );
+                if( !empty( $ssl_response['code'] ) && $ssl_response['code'] == '200'){
                     $sslcert_notification_response['success'] = $ssl_response['message'].' for domain'.$domain;
                     break;
-                }else{
+                } else {
                     $sslcert_notification_response['error'] = $ssl_response['message'].' for domain'.$domain;
                 }
                 $attempt ++;
             }
-        }else{
+        } else {
             $domain_notification_response['error'] = "Sorry could not add domain ".$domain;
         }
 
         // Log Api Response for Notifications
         $messages = array_merge($sslcert_notification_response,$domain_notification_response);
         self::setWaasheroNotifications($notification_key , $messages);
-        if(wp_doing_ajax()){
+        if( wp_doing_ajax() ) {
             $js_response['success'] = true;
             $js_response['message'] = $response;
             echo json_encode($js_response);
             die;
-        }else{
+        } else {
+
             return null;
         }
 
-        }catch( Exception $e ) {
-         return null;
+        } catch( Exception $e ) {
+
+            return null;
         }
 
     }
 
-    private static function AddDomainAliasHandler($domain , $method = 'POST' ,  $endpoint){
+    /**
+     * Domain handler
+     *
+     * @param [string] $domain
+     * @param string $method
+     * @param [string] $endpoint
+     * @return void
+     */
+    private static function AddDomainAliasHandler( $domain , $method = 'POST' ,  $endpoint ) {
 
         $authorization = "Authorization: Bearer ".WAASHERO_CLIENT_API_KEY;
-        $url = WAASHERO_CLIENT_API_URL. $endpoint.($method !== "POST" ? "?domain=".$domain: WAASHERO_CLIENT_SERVER_ID);
+        $url = WAASHERO_CLIENT_API_URL. $endpoint.( $method !== "POST" ? "?domain=".$domain: WAASHERO_CLIENT_SERVER_ID );
 
         try{
 
@@ -166,35 +176,49 @@ class Waashero_Api
         }
     }
 
-    private static function setWaasheroNotifications($key , $value){
+    /**
+     * Sets notifications
+     *
+     * @param [string] $key
+     * @param [arrray] $value
+     * @return void
+     */
+    private static function setWaasheroNotifications( $key , $value ) {
 
-          $messages = [];
-          $notificatinos = get_option($key);
-          if(!empty($notificatinos)){
-              $notificatinos  = array_merge($notificatinos , $value);
-              return update_option($key,$value);
-          }else{
-             return  update_option($key,$value);
-          }
-     }
+        $messages = [];
+        $notificatinos = get_option($key);
+        if( !empty( $notificatinos ) ) {
+            $notificatinos  = array_merge($notificatinos , $value);
 
-     public static function getWaasheroNotifications(){
-         $notification_key = get_current_user_id().'_domain_notifications';
-         $notificatinos = get_option($notification_key);
-         if(!empty($notificatinos)){
-             // Flush Notification on Read
-             delete_option($notification_key);
-             $js_response['success'] = true;
-             $js_response['messages'] = $notificatinos;
-              echo json_encode($js_response);
-              die;
-         }else{
-             $js_response['success'] = false;
-             $js_response['messages'] = '';
-             echo json_encode($js_response);
-             die;
-         }
-     }
+            return update_option($key,$value);
+        } else {
+
+            return  update_option($key,$value);
+        }
+    }
+
+    /**
+     * Get json encodedlist of notifications
+     *
+     * @return void
+     */
+    public static function getWaasheroNotifications() {
+        $notification_key = get_current_user_id().'_domain_notifications';
+        $notificatinos = get_option($notification_key);
+        if( !empty( $notificatinos ) ) { 
+            // Flush Notification on Read
+            delete_option($notification_key);
+            $js_response['success'] = true;
+            $js_response['messages'] = $notificatinos;
+            echo json_encode($js_response);
+            die;
+        }else{
+            $js_response['success'] = false;
+            $js_response['messages'] = '';
+            echo json_encode($js_response);
+            die;
+        }
+    }
 }
 
 return new Waashero_Api();

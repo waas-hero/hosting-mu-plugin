@@ -60,8 +60,11 @@ function waas_hero_mu_init() {
 
     if ( !class_exists( 'WU_Domain_Mapping_Hosting_Support' ) && class_exists('WP_Ultimo') ) {
         require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+        
+       
+        
     }
-
+    
     if ( !wp_installing() && $table_name && $wpdb->get_var( $query ) == $table_name ) {
         require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-stateless-media.php';
         require WPMU_PLUGIN_DIR.'/waashero/waashero.php';
