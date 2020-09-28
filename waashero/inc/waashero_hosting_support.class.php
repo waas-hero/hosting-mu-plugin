@@ -37,7 +37,6 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
                 array( $this, 'add_domain_to_waas_builder' ), 
                 20 
             );
-
             // add_action(
             //     'mercator.mapping.deleted', 
             //     array( $this, 'remove_domain_from_waas_builder'), 
