@@ -100,22 +100,36 @@ class Waashero {
                 )
             );
 
-            add_action( 
-                'current_screen',  
+            add_action(
+                'current_screen',
                 array(
                     &$this,
                     'render_tour'
-                ) 
-            );     
+                )
+            );
             // future use to add development mode
-            //self::admin_notice_development_mode();  
-            
+            //self::admin_notice_development_mode();
+
+            // Confirm Domain Pending SSL certificate
+             add_action('admin_init',array(
+                 &$this,
+                 'checkDomainSSLCert'
+             ));
         }
     
     }
+    /**
+     * Confirm SSL Certficate for domain
+     * @return void
+     */
 
-
-
+    function checkDomainSSLCert(){
+        $ssl_certificate_confirmation_key = get_current_user_id().'_ssl_flag';
+        $is_confirmation_pending = get_option($ssl_certificate_confirmation_key);
+        if(!empty($is_confirmation_pending['domain']) && (!empty($is_confirmation_pending['status']) && $is_confirmation_pending['status'] == 'pending')){
+            Waashero_Api::confirmSSLCert($is_confirmation_pending['domain']);
+        }
+    }
 
     /**
     * Add functionality to create an DNS A record on subsite creation
