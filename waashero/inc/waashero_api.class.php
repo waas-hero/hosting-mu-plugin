@@ -192,7 +192,8 @@ class Waashero_Api
             $confirmation_data['status'] = 'pending';
             delete_option($ssl_certificate_confirmation_key);
             self::setWaasheroNotifications($ssl_certificate_confirmation_key, $confirmation_data);
-            self::setWaasheroNotifications($notification_key, $domain_notification_response);
+            // Override the Api response message with  wp ultimo add domain message
+            //self::setWaasheroNotifications($notification_key, $domain_notification_response);
             return null;
 
         } catch (Exception $e) {
