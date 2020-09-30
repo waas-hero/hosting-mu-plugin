@@ -88,10 +88,11 @@ if( !function_exists( 'ud_stateless_media_message' ) ) {
       echo '<div class="error fade" style="padding:11px;">' . $message . '</div>';
     }
   }
-  add_action( 'admin_notices', 'ud_stateless_media_message' );
+  
 }
 
 if( defined( 'sm_bucket' ) && ud_check_stateless_media() ) {
   //** Initialize. */
   ud_get_stateless_media();
+  add_action( 'admin_notices', 'ud_stateless_media_message' );
 }

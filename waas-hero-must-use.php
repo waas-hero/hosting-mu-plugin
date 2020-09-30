@@ -59,7 +59,13 @@ function waas_hero_mu_init() {
     $query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) );
 
     if ( !class_exists( 'WU_Domain_Mapping_Hosting_Support' ) && class_exists('WP_Ultimo') ) {
-        require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+        $instance = WP_Ultimo::get_instance();
+        $version  = $instance->version;
+      
+        if ( !empty( $version ) && $version < 2 ) {
+            
+            require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+        }
         
        
         
