@@ -20,7 +20,7 @@ if( !defined( 'WAASHERO_CDN_HOSTNAME' ) ) {
 	define( 'WAASHERO_CDN_HOSTNAME', "xyz.com" );
 }
 
-$classes = array( 'Waashero_Settings', 'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' );
+$classes = array(  'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI' );
 foreach( $classes as $class ) {
 	if ( file_exists( WAASHERO_DIR.'/inc/'. strtolower( $class ).'.class.php' ) ) {
 		require ( sprintf(

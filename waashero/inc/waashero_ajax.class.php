@@ -24,14 +24,6 @@ class Waashero_Ajax
     }
 
 
-    public static function waashero_welcome_tour(){
-        
-        $options = Waashero_Options::get_options();
-        $options['welcome_tour'] = 1;
-        Waashero_Options::save_options($options);       
-        $result = array('success'  => true);
-        wp_send_json($result);   
-    }
 
     public static function waashero_notifications() {
 

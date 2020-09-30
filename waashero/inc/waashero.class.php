@@ -20,22 +20,6 @@ class Waashero {
         add_action( 'admin_enqueue_scripts', array(&$this, 'waashero_requirements_enqueue_scripts'));
                   // mute core update email
        
-        // //cache plugins        
-        // if(method_exists('LiteSpeed_Cache_API','hook_control')){
-        //     LiteSpeed_Cache_API::hook_control( array( &$this, 'enable_micro_cache_and_304' ) ) ; 
-        // }
-
-        // //litspeed 3+
-        // add_action( 'litespeed_control_finalize', array( &$this, 'enable_micro_cache_and_304' ) );
-
-      
-
-        
-
-        // add_action( 'wpfc_cache_detection_info', array(&$this, 'waashero_third_party_is_cacheable_wpfc'), PHP_INT_MAX );
-        // add_filter( 'rocket_buffer',array(&$this, 'waashero_third_party_is_cacheable_wp_rocket'), 10, 1 );
-        // add_filter( 'w3tc_pagecache_set', array(&$this, 'waashero_third_party_is_cacheable_w3tc'), 10, 2 );         
-
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR ( defined('DOING_CRON') && DOING_CRON) OR ( defined('DOING_AJAX') && DOING_AJAX) OR ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
           
             
@@ -72,10 +56,6 @@ class Waashero {
             return;
         }      
 
-        if( $this::user_can_manage_admin_settings() && ( is_admin() || is_network_admin() ) ) {           
-                   
-             Waashero_Settings::update();            
-        }
    
 
         if( $this::user_can_manage_admin_settings() && ( is_network_admin() || is_admin())) {
@@ -100,13 +80,6 @@ class Waashero {
                 )
             );
 
-            add_action(
-                'current_screen',
-                array(
-                    &$this,
-                    'render_tour'
-                )
-            );
             // future use to add development mode
             //self::admin_notice_development_mode();
 
@@ -366,26 +339,7 @@ class Waashero {
         }
     }
    
-    function enable_micro_cache_and_304() {
-
-       
-
-        $options =  Waashero_Options::get_options(); 
-
-        if ($options['load_balancer_micro_cache']) {
-            $seconds = $options['load_balancer_micro_cache_seconds'];
-            header('Cache-Control: public,s-maxage='.$seconds,true);
-            header('X-Cacheable: yes',true);
-            header_remove("pragma");
-        }else{
-            header("Cache-Control:no-cache, must-revalidate, max-age=0");
-            header_remove("pragma");
-            header('X-Cacheable: yes',true);
-        }
-
-    }
-
-
+    
     private static function format_message($mesg,$tag)
 	{
 
@@ -394,50 +348,6 @@ class Waashero {
 	}
 
   
-
-    public static function SetObjectCache(){
-     
-
-        
-        $wordpress_object_cache_file_location = ABSPATH . 'wp-content/object-cache.php';
-        $disable = true;
-        $options = Waashero_Options::get_options(true);
-
-     
-
-
-        if($options["development_mode"] == 0 && $options["enable_object_cache"] == 1){
-            $disable = false;
-        }      
-       
-
-        if($disable == true){
-        
-            if (file_exists($wordpress_object_cache_file_location)) {
-                unlink($wordpress_object_cache_file_location);
-                wp_cache_flush();
-                if(function_exists('apcu_clear_cache')){                   
-                    apcu_clear_cache();
-                }
-            } 
-
-        }else {
-         
-            if(!file_exists($wordpress_object_cache_file_location)){
-                $object_cache_file_location = WAASHERO_DIR . '/inc/class-waashero-object-cache.php';
-                $object_cache_php = file_get_contents($object_cache_file_location);
-                file_put_contents($wordpress_object_cache_file_location,$object_cache_php);
-                wp_cache_flush();
-                if(function_exists('apcu_clear_cache')){                   
-                    apcu_clear_cache();
-                }
-
-            }
-        }
-
-    }
-
-
     //still need to work on it
     /**
      * needs to bre removed
@@ -563,167 +473,7 @@ class Waashero {
         return $local_timestamp;
     }
   
-    public static function insert_htaccess_rules()
-	{
 
-        $insertion = array('','## Do not edit the contents of this block! ##');
-        array_push($insertion,'RewriteEngine On');
-
-        $global_options = Waashero_Options::get_options(true);
-
-        $whitelisted = get_site_option('waashero_dynamic_ip_whitelist');
-        if(!$whitelisted || !is_array($whitelisted)){
-            $whitelisted = array();
-        }
-
-        foreach ($whitelisted as $key => $value){            
-            array_push($insertion,'SetEnvIfNoCase Remote_Addr ^'.$key.'$ MODSEC-OFF');
-            array_push($insertion,
-                'RewriteCond %{REMOTE_ADDR} ^'. str_replace('.','\.',$key) .'$',
-                'RewriteRule .* - [E=noconntimeout:1]');
-        }
-
-
-        array_push($insertion,'');
-
-        $marker = "WAASHERO";
-        $filename = '/home/'.WAASHERO_CLIENT_API_KEY .'/public_html/.htaccess';
-
-		if ( ! file_exists($filename) ) {
-			if ( ! is_writable( dirname($filename) ) ) {
-				return false ;
-			}
-		
-			try {
-				touch($filename) ;
-			}
-			catch ( ErrorException $ex ){
-				return false ;
-			}
-			
-		}
-		elseif ( ! is_writeable($filename) ) {
-			return false ;
-		}
-
-		if ( ! is_array($insertion) ) {
-			$insertion = explode( "\n", $insertion ) ;
-		}
-
-		$start_marker = "# BEGIN {$marker}" ;
-		$end_marker   = "# END {$marker}" ;
-
-		$fp = fopen($filename, 'r+' ) ;
-		if ( ! $fp ) {
-			return false ;
-		}
-
-		// Attempt to get a lock. If the filesystem supports locking, this will block until the lock is acquired.
-		flock( $fp, LOCK_EX ) ;
-
-		$lines = array() ;
-		while ( ! feof($fp) ) {
-			$lines[] = rtrim(fgets($fp), "\r\n" ) ;
-		}
-
-		// Split out the existing file into the preceding lines, and those that appear after the marker
-		$pre_lines = $post_lines = $existing_lines = array() ;
-		$found_marker = $found_end_marker = false ;
-		foreach ( $lines as $line ) {
-			if ( ! $found_marker && false !== strpos($line, $start_marker) ) {
-				$found_marker = true ;
-				continue ;
-			}
-			elseif ( ! $found_end_marker && false !== strpos($line, $end_marker) ) {
-				$found_end_marker = true ;
-				continue ;
-			}
-
-			if ( ! $found_marker ) {
-				$pre_lines[] = $line ;
-			}
-			elseif ( $found_marker && $found_end_marker ) {
-				$post_lines[] = $line ;
-			}
-			else {
-				$existing_lines[] = $line ;
-			}
-		}
-
-		// Check to see if there was a change
-		if ( $existing_lines === $insertion ) {
-			flock($fp, LOCK_UN) ;
-			fclose($fp) ;
-
-			return true ;
-		}
-
-		// Generate the new file data
-        $new_file_data = implode( "\n", array_merge(
-            $pre_lines,
-            array( $start_marker ),
-            $insertion,
-            array( $end_marker ),
-            $post_lines
-        ) ) ;
-
-
-		// Write to the start of the file, and truncate it to that length
-		fseek($fp, 0) ;
-		$bytes = fwrite($fp, $new_file_data) ;
-		if ( $bytes ) {
-			ftruncate($fp, ftell($fp)) ;
-		}
-		fflush($fp) ;
-		flock($fp, LOCK_UN) ;
-		fclose($fp) ;
-
-		return (bool) $bytes ;
-	}
-
-
-
-    function render_tour(){
-        
-
-        if(self::is_wp_dashboard()){
-            
-            $options = Waashero_Options::get_options(); 
-            $should_render_tour = true;
-
-            if(isset($options['welcome_tour'])){
-                
-                if($options['welcome_tour'] == 1){
-                    $should_render_tour = false;
-                }
-            }
-
-            if($should_render_tour){
-                
-
-                add_action( 'admin_enqueue_scripts',   function () {
-                    $script_file = '/wp-content/mu-plugins/waashero/js/welcome_tour_pointer.js';
-
-                    if(is_multisite()){
-
-                        if(!is_main_site()){
-                            $script_file = '/wp-content/mu-plugins/waashero/js/subsite_welcome_tour_pointer.js';
-                        }
-                        
-                    }
-                    // Add pointers style to queue.
-                    wp_enqueue_style( 'wp-pointer' );
-                    wp_enqueue_script( 'wp-pointer' );
-                    wp_enqueue_script( 'waashero_hopscotch', $script_file );
-                });
-                
-                
-            }
-
-
-        }
-
-    }
 
     public static function is_wp_dashboard(){
         if (is_admin()) {	
