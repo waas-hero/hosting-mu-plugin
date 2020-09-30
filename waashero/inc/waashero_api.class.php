@@ -73,10 +73,12 @@ class Waashero_Api
         $endpoint = WAASHERO_CLIENT_API_URL . '/sslcert?domain=' . $domain;
 
         $ssl_response = self::curlHandler($endpoint, 'GET');
-        if (!empty($ssl_response['code']) && $ssl_response['code'] == '200') {
-            $sslcert_notification_response['success'] =  'SSL certificate successfully created for domain ' . $domain;
-        } else {
-            $sslcert_notification_response['error'] = (str_replace(".", '', $ssl_response['message'])) . ' for domain ' . $domain;
+        if (!empty($ssl_response['certificate']) && $ssl_response['certificate']['status'] != 'inactive') {
+            $sslcert_notification_response['success'] =  $ssl_response['certificate']['message'];
+        } else if(!empty($ssl_response['certificate'])){
+            $sslcert_notification_response['error'] = $ssl_response['certificate']['message'];
+        }else{
+            $sslcert_notification_response['error'] = "SSL Certificate not found for domain " . $domain;
         }
         // Remove SSL Confirmation flag from DB on success
         if (!empty($sslcert_notification_response['success'])) {
