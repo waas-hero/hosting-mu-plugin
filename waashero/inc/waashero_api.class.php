@@ -68,15 +68,13 @@ class Waashero_Api
      */
     public static function confirmSSLCert($domain)
     {
-
         $notification_key = get_current_user_id() . '_domain_notifications';
         $sslcert_notification_response = [];
         $endpoint = WAASHERO_CLIENT_API_URL . '/sslcert?domain=' . $domain;
 
         $ssl_response = self::curlHandler($endpoint, 'GET');
-        $ssl_response = json_decode($ssl_response, true);
         if (!empty($ssl_response['code']) && $ssl_response['code'] == '200') {
-            $sslcert_notification_response['success'] = (str_replace(".", '', $ssl_response['message'])) . ' for domain ' . $domain;
+            $sslcert_notification_response['success'] =  'SSL certificate successfully created for domain ' . $domain;
         } else {
             $sslcert_notification_response['error'] = (str_replace(".", '', $ssl_response['message'])) . ' for domain ' . $domain;
         }
@@ -128,7 +126,7 @@ class Waashero_Api
             $output = curl_exec($ch);
             // close curl resource to free up system resources
             curl_close($ch);
-            return (is_object($output) ? json_decode($output, true) : $output);
+            return  (!empty($output) ? json_decode($output, true) : []);
 
         } catch (Exception $e) {
             return null;
@@ -182,8 +180,8 @@ class Waashero_Api
             $ssl_certificate_confirmation_key = get_current_user_id() . '_ssl_flag';
             $domain_notification_response = [];
             $response = self::curlHandler($endpoint, 'POST', $data);
-            if (!empty($response))
-                $domain_notification_response['success'] = $response;
+            if (!empty($response['message']))
+                $domain_notification_response['success'] = $response['message'];
             else
                 $domain_notification_response['error'] = "Sorry could not add domain " . $domain;
 
@@ -196,10 +194,9 @@ class Waashero_Api
             //self::setWaasheroNotifications($notification_key, $domain_notification_response);
             return null;
 
-        } catch (Exception $e) {
-
-            return null;
-        }
+         } catch (Exception $e) {
+             return null;
+         }
 
     }
 
