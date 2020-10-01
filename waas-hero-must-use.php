@@ -52,7 +52,7 @@ function waas_hero_mu_init() {
     if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
         $file = fopen( WPMU_PLUGIN_DIR. "/waashero-config.php", 'a' );
         fclose( $file );
-        file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_bucket', 'wb-storage' );\n" );
+        file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_buckets', 'wb-storage' );\n" );
     }
     global $wpdb;
     $table_name = $wpdb->options;
