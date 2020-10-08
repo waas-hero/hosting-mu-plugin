@@ -16,24 +16,6 @@ if (!defined( 'WP_CLI' ) || !WP_CLI ) return;
 
 class Waashero_WP_CLI {
     
-    /**
-     * Get HalfElf Stats
-     *
-     * ## EXAMPLES
-     *
-     * wp halfelf stats
-     *
-     */
-
-    public function objectcache( $args, $assoc_args ) {
-
-   
-        $options = Waashero_Options::get_options();
-        $options['enable_object_cache'] = '0';
-        Waashero_Options::save_options( $options );
-        WP_CLI::success( __( 'Object-Cache is disabled.', 'waashero' ) );
-        
-    }
 
     public function exposed_function() {
 

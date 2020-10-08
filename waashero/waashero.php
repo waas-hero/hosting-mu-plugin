@@ -15,12 +15,8 @@ defined('ABSPATH') OR exit;
 
 define( 'WAASHERO_DIR', dirname(__FILE__) );
 define('WAASHERO_BASE', plugin_basename(__FILE__) );
-define('WAASHERO_MIN_WP', '4.0');
-if( !defined( 'WAASHERO_CDN_HOSTNAME' ) ) {
-	define( 'WAASHERO_CDN_HOSTNAME', "xyz.com" );
-}
 
-$classes = array( 'Waashero_Settings', 'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Options' );
+$classes = array(  'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI' );
 foreach( $classes as $class ) {
 	if ( file_exists( WAASHERO_DIR.'/inc/'. strtolower( $class ).'.class.php' ) ) {
 		require ( sprintf(

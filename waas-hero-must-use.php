@@ -52,14 +52,20 @@ function waas_hero_mu_init() {
     if( !file_exists( WPMU_PLUGIN_DIR. "/waashero-config.php" ) ) {
         $file = fopen( WPMU_PLUGIN_DIR. "/waashero-config.php", 'a' );
         fclose( $file );
-        file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_bucket', 'wb-storage' );\n" );
+        file_put_contents( WPMU_PLUGIN_DIR. "/waashero-config.php", "<?php \ndefine( 'sm_buckets', 'wb-storage' );\n" );
     }
     global $wpdb;
     $table_name = $wpdb->options;
     $query      = $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) );
 
     if ( !class_exists( 'WU_Domain_Mapping_Hosting_Support' ) && class_exists('WP_Ultimo') ) {
-        require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+        $instance = WP_Ultimo::get_instance();
+        $version  = $instance->version;
+      
+        if ( !empty( $version ) && $version < 2 ) {
+            
+            require WP_PLUGIN_DIR.'/wp-ultimo/inc/class-wu-domain-mapping-hosting-support.php';
+        }
         
        
         

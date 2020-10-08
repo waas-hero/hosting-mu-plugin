@@ -1,12 +1,12 @@
-=== Waashero ===
-Contributors: j hanlon, muhammadfaizanhaidar
+=== Waashero Hosting===
+Contributors: J Hanlon, muhammadfaizanhaidar
 Tags: waashero
 Requires at least: 5.4
 Tested up to: 5.5
 Stable tag: 1.0.0
 .1License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
-High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.
+High performance one click implementation of Waashero cloud platform features including Wp Ultimo integration.
 
 == Description ==
 
