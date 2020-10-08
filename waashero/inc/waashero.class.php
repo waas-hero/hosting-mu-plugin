@@ -15,7 +15,7 @@ class Waashero {
 
 
         // Add hook to the new blog/subsite creation to create a DNS record
-        if( !$this->uses_waashero() ) {
+        if( $this->uses_waashero() && defined( 'ULTIMO_FALSE' ) ) {
             add_action(
                 'wp_insert_site', 
                 array(
@@ -120,7 +120,7 @@ class Waashero {
     }
 
     private function uses_waashero() {
-        return defined( 'ULTIMO_FALSE' ) && ULTIMO_FALSE;
+        return defined( 'DEFAULT_HOOKS' ) && DEFAULT_HOOKS ;
     }
     /**
      * Confirm SSL Certficate for domain
