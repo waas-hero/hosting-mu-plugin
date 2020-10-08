@@ -120,7 +120,10 @@ class Waashero_Api
             if ($method == "POST") {
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-            } else {
+            }else if($method == 'DELETE'){
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+            }else {
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
             }
 
@@ -161,16 +164,18 @@ class Waashero_Api
      * @param [type] $domain
      * @return void
      */
-    public static function AddDomainAlias($domain)
+    public static function AddDomainAlias($domain , $site_id)
     {
 
         $wildcard = false;
+        $domain = preg_replace('#^https?://#', '', $domain);
         if (strpos($domain, '*.') === 0) {
             $wildcard = true;
         }
         $data = array(
             'domain' => $domain,
-            'wildcard' => $wildcard
+            'wildcard' => $wildcard,
+            'site_id' => $site_id
         );
 
         $data = http_build_query($data);
@@ -182,7 +187,7 @@ class Waashero_Api
             $ssl_certificate_confirmation_key = get_current_user_id() . '_ssl_flag';
             $domain_notification_response = [];
             $response = self::curlHandler($endpoint, 'POST', $data);
-            if (!empty($response['message']))
+            if (!empty($response['code']) && $response['code'] == 200)
                 $domain_notification_response['success'] = $response['message'];
             else
                 $domain_notification_response['error'] = "Sorry could not add domain " . $domain;
@@ -198,6 +203,39 @@ class Waashero_Api
 
          } catch (Exception $e) {
              return null;
+         }
+
+    }
+
+
+    /**
+     * Delete domain
+     *
+     * @param [type] $domain
+     * @return void
+     */
+    public static function DeleteDomainAlias($domain , $site_id)
+    {
+        $domain = preg_replace('#^https?://#', '', $domain);
+        $data = array('domain' => $domain,'site_id'=>$site_id);
+        $data = http_build_query($data);
+        $endpoint = WAASHERO_CLIENT_API_URL . '/ultimo/domain/' . WAASHERO_CLIENT_SERVER_ID;
+        try {
+            $notification_key = get_current_user_id() . '_domain_notifications';
+            $domain_notification_response = [];
+            $response = self::curlHandler($endpoint, 'DELETE', $data);
+            if (!empty($response['code']) && $response['code'] == 200) {
+                $domain_notification_response['success'] = $response['message'];
+            }else
+                $domain_notification_response['error'] =  (!empty($response['message']) ? $response['message'] : "Sorry could not delete domain " . $domain);
+
+
+            // Override the Api response message with  wp ultimo add domain message
+            //self::setWaasheroNotifications($notification_key, $domain_notification_response);
+            return null;
+
+         } catch (Exception $e) {
+            return null;
          }
 
     }

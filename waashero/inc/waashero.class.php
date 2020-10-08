@@ -150,8 +150,7 @@ class Waashero {
     */
     function createRecordForNewSubsite( $data ) {
 
-     
-        $add = Waashero_Api::AddDomainAlias( $data->domain );
+        $add = Waashero_Api::AddDomainAlias( $data->domain , $data->blog_id);
      
     }
 
@@ -169,10 +168,7 @@ class Waashero {
     * @return void
     */
     function DeleteRecordForOldSubsite( $data ) {
-
-     
-        $add = Waashero_Api::DeleteDomainAlias( $data->domain );
-     
+        $add = Waashero_Api::DeleteDomainAlias( $data->domain  , $data->blog_id);
     }
 
 
