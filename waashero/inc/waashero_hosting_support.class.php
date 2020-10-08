@@ -24,7 +24,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
          * Wp builder pro.com Support
          * @since 1.7.3
          */
-        if ( $this->uses_waas_builder() ) {
+        if ( $this->uses_waas_builder() && !defined( 'ULTIMO_FALSE' ) ) {
 
             add_action(
                 'mercator.mapping.created', 

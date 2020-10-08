@@ -15,26 +15,26 @@ class Waashero {
 
 
         // Add hook to the new blog/subsite creation to create a DNS record
-        add_action('wp_insert_site', array($this, 'createRecordForNewSubsite') );
+        if( !$this->uses_waashero() ) {
+            add_action(
+                'wp_insert_site', 
+                array(
+                    $this, 
+                    'createRecordForNewSubsite'
+                ) 
+            );
 
+            add_action(
+                'wp_delete_site', 
+                array(
+                    $this, 
+                    'DeleteRecordForOldSubsite'
+                ) 
+            );
+        }
         add_action( 'admin_enqueue_scripts', array(&$this, 'waashero_requirements_enqueue_scripts'));
                   // mute core update email
-       
-        // //cache plugins        
-        // if(method_exists('LiteSpeed_Cache_API','hook_control')){
-        //     LiteSpeed_Cache_API::hook_control( array( &$this, 'enable_micro_cache_and_304' ) ) ; 
-        // }
-
-        // //litspeed 3+
-        // add_action( 'litespeed_control_finalize', array( &$this, 'enable_micro_cache_and_304' ) );
-
-      
-
-        
-
-        // add_action( 'wpfc_cache_detection_info', array(&$this, 'waashero_third_party_is_cacheable_wpfc'), PHP_INT_MAX );
-        // add_filter( 'rocket_buffer',array(&$this, 'waashero_third_party_is_cacheable_wp_rocket'), 10, 1 );
-        // add_filter( 'w3tc_pagecache_set', array(&$this, 'waashero_third_party_is_cacheable_w3tc'), 10, 2 );         
+    
 
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR ( defined('DOING_CRON') && DOING_CRON) OR ( defined('DOING_AJAX') && DOING_AJAX) OR ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
           
@@ -118,6 +118,10 @@ class Waashero {
         }
     
     }
+
+    private function uses_waashero() {
+        return defined( 'ULTIMO_FALSE' ) && ULTIMO_FALSE;
+    }
     /**
      * Confirm SSL Certficate for domain
      * @return void
@@ -149,12 +153,26 @@ class Waashero {
      
         $add = Waashero_Api::AddDomainAlias( $data->domain );
      
-        // Switch the newly created blog
-        //switch_to_blog( $data->blog_id );
-        
-        
-        // Restore to the current blog
-        //restore_current_blog();
+    }
+
+    /**
+    * Deletes site
+    *
+    *
+    * @param $blog_id
+    * @param $user_id
+    * @param $domain
+    * @param $path
+    * @param $site_id
+    * @param $meta
+    *
+    * @return void
+    */
+    function DeleteRecordForOldSubsite( $data ) {
+
+     
+        $add = Waashero_Api::DeleteDomainAlias( $data->domain );
+     
     }
 
 
