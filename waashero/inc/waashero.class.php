@@ -15,11 +15,25 @@ class Waashero {
 
 
         // Add hook to the new blog/subsite creation to create a DNS record
-        add_action('wp_insert_site', array($this, 'createRecordForNewSubsite') );
+        if( $this->uses_waashero() && defined( 'ULTIMO_FALSE' ) ) {
+            add_action(
+                'wp_insert_site', 
+                array(
+                    $this, 
+                    'createRecordForNewSubsite'
+                ) 
+            );
 
+            add_action(
+                'wp_delete_site', 
+                array(
+                    $this, 
+                    'DeleteRecordForOldSubsite'
+                ) 
+            );
+        }
         add_action( 'admin_enqueue_scripts', array(&$this, 'waashero_requirements_enqueue_scripts'));
                   // mute core update email
-       
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR ( defined('DOING_CRON') && DOING_CRON) OR ( defined('DOING_AJAX') && DOING_AJAX) OR ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
           
             
@@ -91,6 +105,10 @@ class Waashero {
         }
     
     }
+
+    private function uses_waashero() {
+        return defined( 'DEFAULT_HOOKS' ) && DEFAULT_HOOKS ;
+    }
     /**
      * Confirm SSL Certficate for domain
      * @return void
@@ -119,15 +137,25 @@ class Waashero {
     */
     function createRecordForNewSubsite( $data ) {
 
+        $add = Waashero_Api::AddDomainAlias( $data->domain , $data->blog_id);
      
-        $add = Waashero_Api::AddDomainAlias( $data->domain );
-     
-        // Switch the newly created blog
-        //switch_to_blog( $data->blog_id );
-        
-        
-        // Restore to the current blog
-        //restore_current_blog();
+    }
+
+    /**
+    * Deletes site
+    *
+    *
+    * @param $blog_id
+    * @param $user_id
+    * @param $domain
+    * @param $path
+    * @param $site_id
+    * @param $meta
+    *
+    * @return void
+    */
+    function DeleteRecordForOldSubsite( $data ) {
+        $add = Waashero_Api::DeleteDomainAlias( $data->domain  , $data->blog_id);
     }
 
 

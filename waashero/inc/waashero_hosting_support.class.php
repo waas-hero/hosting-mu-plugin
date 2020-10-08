@@ -24,7 +24,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
          * Wp builder pro.com Support
          * @since 1.7.3
          */
-        if ( $this->uses_waas_builder() ) {
+        if ( $this->uses_waas_builder() && !defined( 'ULTIMO_FALSE' ) && !defined( 'DEFAULT_HOOKS' ) ) {
 
             add_action(
                 'mercator.mapping.created', 
@@ -34,14 +34,14 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
 
             add_action(
                 'mercator.mapping.updated', 
-                array( $this, 'add_domain_to_waas_builder' ), 
+                array( $this, 'add_domain_to_waas_builder' ),
                 20 
             );
-            // add_action(
-            //     'mercator.mapping.deleted', 
-            //     array( $this, 'remove_domain_from_waas_builder'), 
-            //     20 
-            // );
+             add_action(
+                 'mercator.mapping.deleted',
+                 array( $this, 'remove_domain_from_waas_builder'),
+                 20
+             );
 
             // add_action(
             //     'wu_custom_domain_after', 
@@ -93,12 +93,13 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     public function add_domain_to_waas_builder( $mapping ) {
 
         $domain = $mapping->get_domain();
+        $site_id = $mapping->get_site_id();
 
-        if ( !$this->uses_waas_builder() || ! $domain ) {
+        if ( !$this->uses_waas_builder() || ! $domain  || !$site_id) {
                 return;
         }      
 
-        Waashero_Api::AddDomainAlias( $domain );
+        Waashero_Api::AddDomainAlias( $domain , $site_id);
 
     } // end add_domain_to_waas_builder;
 
@@ -112,16 +113,11 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
     public function remove_domain_from_waas_builder( $mapping ) {
 
         $domain = $mapping->get_domain();
-        
-        if( !$this->uses_waas_builder() || ! $domain ) {
+        $site_id = $mapping->get_site_id();
+        if( !$this->uses_waas_builder() || ! $domain  || !$site_id) {
                 return;
         }
-
-        $this->send_waas_builder_api_request('/domains/', array(
-            'domain'   => $domain,
-            'wildcard' => strpos( $domain, '*.' ) === 0
-        ));
-
+        Waashero_Api::DeleteDomainAlias( $domain ,$site_id);
     } // end add_domain_to_waas_builder;
 
 } // end class WU_Domain_Mapping_Hosting_Support;
