@@ -1,4 +1,3 @@
-#
 #!/bin/bash
 # Create TXT record
 # Test configuration and reload if successful
