@@ -80,5 +80,15 @@ function waas_hero_mu_init() {
         require_once WPMU_PLUGIN_DIR.'/waashero/wp-stateless/wp-config-transformer/src/WPConfigTransformer.php';
     }
 }
-
 add_action( 'plugins_loaded', 'waas_hero_mu_init' );
+
+
+/* Force new sites to https */
+add_filter( 'wp_initialize_site_args', function( $args, $site ) {
+	$url = 'https://' . $site->domain . $site->path;
+
+	$args['options']['home']    = $url;
+	$args['options']['siteurl'] = $url;
+
+	return $args;
+}, 10, 2 );
