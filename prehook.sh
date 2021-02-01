@@ -13,6 +13,7 @@ API_KEY=`cat "$share_folder/wordpress/wp-config.php" | grep WAASHERO_CLIENT_API_
 RECORD_ID=$(curl -s -X POST "https://waas-builder.com/api/v0/ultimo/zone/record" \
      -H     "Authorization: Bearer $API_KEY" \
      -H     "Content-Type: application/json" \
+     -H     "Accept: application/json" \
      --data '{"domain":"'"$CERTBOT_DOMAIN"'","content":"'"$CERTBOT_VALIDATION"'"}'  )
 echo $RECORD_ID
 # Save info for cleanup
