@@ -6,7 +6,7 @@ share_folder=$(dirname $mu_plugin_path )
 API_KEY=`cat "$share_folder/wordpress/wp-config.php" | grep WAASHERO_CLIENT_API_KEY | cut -d \' -f 4`
 API_URL=`cat "$share_folder/wordpress/wp-config.php" | grep WAASHERO_CLIENT_API_URL | cut -d \' -f 4`
 
-RECORD_ID=$(curl -s -X POST "/$API_URL/ultimo/zone/record" \
+RECORD_ID=$(curl -s -X POST "$API_URL/ultimo/zone/record" \
      -H     "Cache-Control: no-cache" \
      -H     "Authorization: Bearer $API_KEY" \
      -H     "Content-Type: application/json" \
