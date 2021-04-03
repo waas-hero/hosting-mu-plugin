@@ -1,0 +1,5 @@
+{
+    "require": {
+        "eftec/bladeone": "^3.51"
+    }
+}

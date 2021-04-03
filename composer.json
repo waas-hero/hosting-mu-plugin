@@ -1,0 +1,23 @@
+{
+    "name": "waas-hero/waas-builder-mu",
+    "description": "This plugin stores all media to cloud. High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.",
+    "license": "GPL-2.0+",
+    "type": "wordpress-muplugin",
+    "minimum-stability":"dev",
+    "homepage":"https://waashero.com/",
+    "author":{
+        "name":"J Hanlon, Muhammad Faizan Haidar",
+        "url":"https://waashero.com/"
+    },
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/Waas-Hero/waashero-mu-plugin.git"
+    },
+    "require": {
+            "composer/installers": "~1.0",
+        "eftec/bladeone": "dev-master"
+    },
+    "installer-paths": {
+        "public/content/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+    }
+}
