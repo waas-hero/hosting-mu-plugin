@@ -14,3 +14,16 @@ div.hopscotch-bubble .hopscotch-nav-button.next {
     text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799 !important;
     vertical-align: baseline !important;
 }
+
+[x-cloak] {
+    display: none !important;
+}
+
+input, input[type=date], input[type=datetime-local], input[type=datetime], input[type=email], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    padding: 3px 12px;
+    line-height: 2;
+    min-height: 35px;
+    border-color: #a7a7a7;
+}

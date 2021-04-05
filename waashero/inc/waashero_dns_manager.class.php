@@ -16,12 +16,14 @@ class Waashero_Dns_Manager
 {
 
     public $records = [];
+    public $tab = 'A';
     
     public function __construct() {
         
         if ( $this->uses_waas_builder() ){
             add_action( 'admin_menu', [$this, 'loadDnsManagerMenu'] );
             $this->getRecords();
+           // wp_deregister_style('wp-admin');
         }
         
     }
@@ -72,7 +74,7 @@ class Waashero_Dns_Manager
         if ( file_exists( $views.'/dns_manager.blade.php' ) ) {
             
             $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
-            echo $blade->run( "dns_manager", [ "records" => $this->records ] );
+            echo $blade->run( "dns_manager", [ "records" => $this->records, "tab" => $this->tab ] );
 
         }
     }
