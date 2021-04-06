@@ -27,3 +27,8 @@ input, input[type=date], input[type=datetime-local], input[type=datetime], input
     min-height: 35px;
     border-color: #a7a7a7;
 }
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }

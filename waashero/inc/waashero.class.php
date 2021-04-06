@@ -12,8 +12,6 @@ class Waashero {
 
     public function __construct() {
 
-
-
         // Add hook to the new blog/subsite creation to create a DNS record
         if( $this->uses_waashero() && defined( 'ULTIMO_FALSE' ) ) {
             add_action(
@@ -74,9 +72,6 @@ class Waashero {
 
         if( $this::user_can_manage_admin_settings() && ( is_network_admin() || is_admin())) {
 
-
-
-          
 
             $menu_type = is_network_admin() ? "network_admin_menu" :"admin_menu";
 
@@ -270,12 +265,9 @@ class Waashero {
     }
 
     static function admin_notice_development_mode() {
-
       
         //options use the old values before the update, check if is save page
         if(defined("WAASHERO_DEVELOPMENT_MODE") && (!isset($_POST['submit']) && !isset($_POST['waashero']))) {
-          
-          
             add_action('admin_notices',array(__CLASS__,'admin_notice_development_mode_text') );
             if ( is_multisite() ) {
                 add_action('network_admin_notices',array(__CLASS__,'admin_notice_development_mode_text') );

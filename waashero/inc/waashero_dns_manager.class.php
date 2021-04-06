@@ -19,11 +19,13 @@ class Waashero_Dns_Manager
     public $tab = 'A';
     
     public function __construct() {
-        
+
         if ( $this->uses_waas_builder() ){
             add_action( 'admin_menu', [$this, 'loadDnsManagerMenu'] );
+            add_action( 'admin_enqueue_scripts', [$this, 'ajax_form_scripts'] );
+            add_action( 'wp_ajax_record_form', [$this, 'record_form'] ); 
+   
             $this->getRecords();
-           // wp_deregister_style('wp-admin');
         }
         
     }
@@ -51,7 +53,7 @@ class Waashero_Dns_Manager
             add_menu_page( 
                 __('Dns Manager'), 
                 'Dns Manager', 
-                'manage_option', 
+                'edit_posts', 
                 'wh-dns-manager', 
                 [$this, 'loadDnsManagerPage'], 
                 '', 
@@ -68,12 +70,9 @@ class Waashero_Dns_Manager
      */
     public function loadDnsManagerPage() {
 
-        $views = WAASHERO_DIR . '/views';
-        $cache = WAASHERO_DIR . '/cache';
-
-        if ( file_exists( $views.'/dns_manager.blade.php' ) ) {
+        if ( file_exists( WAASHERO_BLADE_VIEWS_DIR.'/dns_manager.blade.php' ) ) {
             
-            $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
+            $blade = new BladeOne(WAASHERO_BLADE_VIEWS_DIR, WAASHERO_BLADE_CACHE_DIR, BladeOne::MODE_AUTO);
             echo $blade->run( "dns_manager", [ "records" => $this->records, "tab" => $this->tab ] );
 
         }
@@ -81,6 +80,36 @@ class Waashero_Dns_Manager
 
     public function getRecords(){
         $this->records = Waashero_Api::getDnsRecords( get_current_blog_id() );
+    }
+
+    public function ajax_form_scripts() {
+        wp_register_script( 'wpbuilderpro', '' );
+        wp_localize_script( 'wpbuilderpro', 'wpbuilderpro',
+            array( 
+                'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce( 'wpbuilderpro-nonce' ),
+            )
+        );
+        wp_enqueue_script( 'wpbuilderpro' );
+    }
+
+    public function record_form(){
+   
+        if ( ! wp_verify_nonce( $_POST['nonce'], 'wpbuilderpro-nonce' ) ) {
+            die( __( 'Security check' ) ); 
+        }
+
+        $hostname = sanitize_text_field($_POST['hostname']);
+        $value = sanitize_text_field($_POST['value']);
+        $ttl = sanitize_text_field($_POST['ttl']);
+        $site_id = get_current_blog_id();
+
+        if($hostname && $value && $ttl && $site_id){
+            echo json_encode(['success' => true, 'message' => 'Record added.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Record not added.']);
+        }
+        die();
     }
 
 }

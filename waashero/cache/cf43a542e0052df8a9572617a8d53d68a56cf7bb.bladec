@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.4/tailwind.min.css" integrity="sha512-paVHVRRhdoOu1nOXKnqDC1Vka0nh7FAmU3nsM4n2FKxOQTeF6crMdMfkVvEsuaOXZ6oEAVL5+wLbQcule/Xdag==" crossorigin="anonymous" />
 
 <?php /* BEGIN PAGE CONTAINER */ ?>
-<div class="page-container max-w-7xl mx-auto">
+<div class="page-container max-w-7xl mx-auto mr-4">
 
 <div class="mt-8">
 

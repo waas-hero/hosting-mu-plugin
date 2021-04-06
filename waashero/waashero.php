@@ -14,10 +14,10 @@ defined('ABSPATH') OR exit;
 /* constants */
 define( 'WAASHERO_DIR', dirname(__FILE__) );
 define( 'WAASHERO_BASE', plugin_basename(__FILE__) );
-define( 'WAASHERO_BLADE_VIEWS_DIR', WAASHERO_DIR . '/views');
-define( 'WAASHERO_BLADE_CACHE_DIR', WAASHERO_DIR . '/cache');
+define( 'WAASHERO_BLADE_VIEWS_DIR', WPMU_PLUGIN_DIR.'/waashero/views');
+define( 'WAASHERO_BLADE_CACHE_DIR', WPMU_PLUGIN_DIR.'/waashero/cache');
 
-$classes = array(  'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'Waashero_Dns_Manager' );
+$classes = array(  'Waashero', 'Waashero_Api', 'Waashero_Ajax', 'Waashero_WP_CLI', 'waashero_dns_manager' );
 foreach( $classes as $class ) {
 	if ( file_exists( WAASHERO_DIR.'/inc/'. strtolower( $class ).'.class.php' ) ) {
 		require ( sprintf(
@@ -27,7 +27,6 @@ foreach( $classes as $class ) {
 		));
 	}
 }
-
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
