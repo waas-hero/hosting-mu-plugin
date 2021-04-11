@@ -2,6 +2,9 @@
 
     <div class="rounded-lg shadow-lg bg-white max-w-screen overflow-x-scroll">
         <div class="flex flex-col">
+
+            <form class="" x-data="deleteRecord()" @submit.prevent="submitDelete" autocomplete="off">
+
             <div class="table align-middle min-w-full">
                 <div class="table-row divide-x divide-gray-200">
         
@@ -47,58 +50,99 @@
                     </div>
 
                 </div>
-        
-                @if( isset($records['response']) )
-                    @foreach ($records['response'] as $key => $record)
+                
+                <template x-if="items" x-for=" item in items " :key=" item ">
+                    
                     <div class="table-row p-1 divide-x divide-gray-100">
-                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-900 table-cell text-left">
-                                {{ $record['type'] }}
-                            </div>
-                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-900 table-cell text-left">
-                                {{ $record['hostname']}}
-                            </div>
-                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-900 table-cell text-left">
-                                {{ $record['value'] }}
-                            </div>
-                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-900 table-cell text-left">
-                                {{ $record['ttl'] }}
-                            </div>
+
+                            <div x-text=" item.type " class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-600 table-cell text-left"></div>
+
+                            <div x-text=" item.hostname " class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-600 table-cell text-left"></div>
+
+                            <div x-text=" item.value " class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-600 table-cell text-left"></div>
+                            
+                            <div x-text=" item.ttl " class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-600 table-cell text-left"></div>
         
-                            
-                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-900 table-cell text-left">
-                            
-                                @if( !empty($confirming) && $confirming['id'] == $record['id'] && $confirming['value'] == $record['value'])
-
-                                <button wire:click="$emit('deleteRecord', '{{$record['hostname']}}', '{{$record['type']}}', '{{$record['ttl']}}', '{{$record['value']}}')" class="btn rounded text-white btn bg-red-500">Confirm Delete</button>
-
-                                    <button wire:click="resetDelete" class="btn rounded  text-white btn bg-red-500">{{__('Reset')}}</button>
-
-                                @elseif($deleting === $record['value'])
-                                    <button disabled class='btn text-white bg-red-500'>Deleting</button>
-                                @else
-
-                                    @if($record['type'] !== 'NS')
-                                        <button wire:click="confirmDelete('{{$record['id']}}', '{{$record['value']}}')" class="btn rounded text-white bg-red-500">Delete</button>
-                                    @endif 
-                            
-                                @endif
-
+                            <div class="px-6 py-2 whitespace-no-wrap text-sm leading-5 text-gray-600 table-cell text-left">
+                                <template x-if="item.type!=='NS'">
+                                    <button @click=" recordData.type = item.type ,recordData.ttl = item.ttl ,recordData.value = item.value, recordData.hostname = item.hostname " x-text="buttonLabel" :disabled="loading" class="btn rounded text-white bg-red-500 py-2 px-3"></button>
+                                </template>                           
                             </div>
                             
-
                         </div>
-                    @endforeach
-
-                @else 
+                    
+                </template>
+                
+                <template x-if="!items" x-for=" item in items " :key=" item ">
                     <p class="p-3 text-lg text-gray-500">
                         {{__('No data was found.')}}
                     </p>
-                @endif
+                </template>
 
                 
         </div>
+    </form>
         
         </div>
     </div>
 
 </div>
+<script>
+
+    function deleteRecord() {
+        
+      return {
+            items: {!! json_encode($records) !!},
+            recordData: {
+                hostname: '',
+                value: '',
+                ttl: '',
+                type: '',
+                nonce: wpbuilderpro.nonce,
+                action: 'record_delete'
+            },
+            message: '',
+            loading: false,
+            buttonLabel: 'Delete Record',
+  
+      submitDelete() {
+       
+            var body = new URLSearchParams( this.recordData );
+
+            this.buttonLabel = 'Processing...'
+            this.loading = true;
+            this.message = ''
+            
+            fetch( wpbuilderpro.ajaxurl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: body
+            })
+            .then(function(data) {
+                return data.json();
+            })
+            .then(function (response) {
+                
+                if(response.message){
+                    message = response.message;
+                }
+               
+            })
+            .catch(() => {
+                this.message = 'Ooops! Something went wrong!';
+            })
+            .finally(() => {
+                location.reload();
+                if(message){
+                    this.message = message;
+                }
+         
+                this.loading = false;
+                this.buttonLabel = 'Delete Record';
+                
+
+            })
+      }
+      }
+  }
+  </script>

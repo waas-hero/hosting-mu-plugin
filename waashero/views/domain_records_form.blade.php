@@ -43,7 +43,7 @@
                 </div>
                
                   <div class="flex flex-col mr-3">
-                    <button class="hover:bg-gray-800 disabled:opacity-50 btn bg-blue-600 text-white rounded py-2 px-3" x-text="buttonLabel" :disabled="loading"></button>
+                    <button @click="formData.type = 'A'" class="hover:bg-gray-800 disabled:opacity-50 btn bg-blue-600 text-white rounded py-2 px-3" x-text="buttonLabel" :disabled="loading"></button>
 
                   </div>
                 
@@ -56,7 +56,7 @@
         
               <div x-cloak x-show="openTab === 2">
                 <form x-data="recordForm()" autocomplete="off" class="flex items-end form-inline mt-4 record-form">
-                    @csrf
+                   
                   <div class="flex flex-col mr-3">
                       <label for="record-cname" class="">CNAME</label>
                       <input x-model="formData.hostname" name="hostname" type="text" placeholder="Enter CNAME" class="form-control wh-form-control hostname-input" id="record-cname" required>
@@ -82,9 +82,8 @@
               </div>
         
               <div x-cloak x-show="openTab === 3">
-                <form x-data="recordForm()" autocomplete="off" class="flex items-end form-inline mt-4 record-form">
+                <form x-data="recordForm()" x-data="{ formData.type: MX }" autocomplete="off" class="flex items-end form-inline mt-4 record-form">
                     
-              
                     <div class="flex flex-col mr-3">
                         <label for="domain-domain-mx" class="">Hostname</label>
                         <input x-model="formData.hostname" name="hostname" type="text" placeholder="Enter @ or hostname" class="form-control wh-form-control hostname-input" id="domain-domain-mx" required>
@@ -115,7 +114,7 @@
               </div>
         
               <div x-cloak x-show="openTab === 4">
-                <form x-data="recordForm()" autocomplete="off" class="flex items-end form-inline mt-4 record-form">
+                <form x-data="recordForm()" x-data="{ formData.type: TXT }"  autocomplete="off" class="flex items-end form-inline mt-4 record-form">
                     
                     <div class="flex flex-col mr-3">
                       <label for="domain-txt" class="">Value</label>
@@ -158,6 +157,7 @@
 			hostname: '',
 		  value: '',
 			ttl: '3600',
+      type: '',
       nonce: wpbuilderpro.nonce,
       action: 'record_form'
 		},
@@ -169,7 +169,7 @@
       this.buttonLabel = 'Processing...'
       this.loading = true;
       this.message = ''
-        
+
       fetch( wpbuilderpro.ajaxurl, {
         method: 'POST',
         credentials: 'same-origin',
@@ -182,16 +182,18 @@
           if(response.message){
             message = response.message
           }
-          console.log(response);
-
+        
       })
       .catch(() => {
         this.message = 'Ooops! Something went wrong!'
       })
       .finally(() => {
+        location.reload();
         this.message = message;
         this.loading = false;
         this.buttonLabel = 'Add Record'
+
+
       })
     }
 	}

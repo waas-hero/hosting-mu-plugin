@@ -241,23 +241,41 @@ class Waashero_Api
     }
 
     /**
-     * Delete domain
+     * Get DNS records for the current subsite
      *
-     * @param [type] $domain
+     * @param $site_id
      * @return void
      */
-    public static function getDnsRecords($site_id)
+    public static function getDnsRecords()
     {
  
-        $endpoint = WAASHERO_CLIENT_API_URL . '/ultimo/zone/' . $site_id . '/records';
+        $endpoint = WAASHERO_CLIENT_API_URL . '/zone/records/list';
         
         try {
 
-            $response = self::curlHandler($endpoint, 'GET');
-           
+            $response = self::curlHandler($endpoint, 'POST', http_build_query(['domain' => home_url(), 'site_id' => get_current_blog_id()]));
+          
             if (!empty($response['code']) && $response['code'] == 200) {
 
-               return $response;
+                $result =[];
+                if( !empty($response['response']) ){
+                    foreach($response['response'] as $id => $zone){
+                        if( isset($zone['records']) ){
+                            foreach($zone['records'] as $n => $record){
+                                if( $zone['type'] != 'SOA'){
+                                    $result[] = [
+                                        'id' => $id,
+                                        'hostname' => $zone['name'],
+                                        'type' => $zone['type'],
+                                        'ttl' => $zone['ttl'],
+                                        'value' => $record['content'],
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+                return $result;
 
             } else {
 
@@ -265,6 +283,73 @@ class Waashero_Api
                 //self::setWaasheroNotifications($notification_key, $domain_notification_response);
                 return $response;
             }
+
+         } catch (Exception $e) {
+             wp_die( print_r($e) );
+            return null;
+         }
+
+    }
+
+    /**
+     * Add a domain record
+     *
+     * @param [array] $data / site_id, hostname, value, ttl, type
+     * @return void
+     */
+    public static function addDnsRecord($data)
+    {
+         
+        //send site_id to get ZONE from the subsite id. NOT domain.
+        $data = http_build_query($data);
+        $endpoint = WAASHERO_CLIENT_API_URL . '/zone/records/add';
+        try {
+
+            $response = self::curlHandler($endpoint, 'POST', $data);
+
+            if (!empty($response['code']) && $response['code'] == 200) {
+
+                return $response;
+ 
+             } else {
+ 
+                return $response;
+                
+             }
+
+
+         } catch (Exception $e) {
+             wp_die( print_r($e) );
+            return null;
+         }
+
+    }
+
+    /**
+     * Delete a domain record
+     *
+     * @param [array] $data / site_id, hostname, value, ttl, type
+     * @return void
+     */
+    public static function deleteDnsRecord($data)
+    {
+        
+        //send site_id to get ZONE from the subsite id. NOT domain.
+        $data = http_build_query($data);
+        $endpoint = WAASHERO_CLIENT_API_URL . '/zone/records/delete';
+        try {
+
+            $response = self::curlHandler($endpoint, 'DELETE', $data);
+
+            if (!empty($response['code']) && $response['code'] == 200) {
+
+                return $response;
+ 
+             } else {
+ 
+                 return $response;
+             }
+
 
          } catch (Exception $e) {
              wp_die( print_r($e) );
