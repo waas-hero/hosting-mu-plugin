@@ -8,8 +8,7 @@ defined('ABSPATH') OR exit;
  * @version 1.0
  * @author BatoPC
  */
-class Waashero_Ajax
-{
+class Waashero_Ajax {
 
     /**
      * Calls function to add domain alias
@@ -23,8 +22,11 @@ class Waashero_Ajax
         wp_send_json( $result );       
     }
 
-
-
+    /**
+     * Adds notifications
+     *
+     * @return void
+     */
     public static function waashero_notifications() {
 
         $result = Waashero_Api::getWaasheroNotifications();

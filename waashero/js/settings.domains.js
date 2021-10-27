@@ -1,13 +1,13 @@
 /**
  * Create and show a dismissible admin notice
  */
-function myAdminNotice(msg,level) {
+function myAdminNotice( msg, level ) {
  
     /* create notice div */
     //level e.g notice, warning, error
      
     var div = document.createElement( 'div' );
-    div.classList.add( 'notice', 'notice-'+level, 'is-dismissible' );
+    div.classList.add( 'notice', 'notice-' + level, 'is-dismissible' );
      
     /* create paragraph element to hold message */
      
@@ -43,7 +43,7 @@ function myAdminNotice(msg,level) {
     /* Insert notice after the first h1 */
      
     var h1 = document.getElementsByTagName( 'h1' )[0];
-    h1.parentNode.insertBefore( div, h1.nextSibling);
+    h1.parentNode.insertBefore( div, h1.nextSibling );
  
  
     /* Make the notice dismissable when the Dismiss icon is clicked */
@@ -65,12 +65,12 @@ function loadPendingNotifications(){
         'action': 'waashero_notifications',
     };
     jQuery.post( ajaxurl, data, function ( response ) {
-        response = JSON.parse(response);
-        if (response.success && response.messages){
-            jQuery.each(response.messages, function( level, message ) {
-                myAdminNotice(message, level);
+        response = JSON.parse( response );
+        if ( response.success && response.messages ) {
+            jQuery.each( response.messages, function( level, message ) {
+                myAdminNotice( message, level );
             });
-        }else{
+        } else {
             //myAdminNotice( response.message, "error" );
             return false;
         }
@@ -79,7 +79,7 @@ function loadPendingNotifications(){
 }
 
 
-jQuery( document ).ready(function ($) {
+jQuery( document ).ready( function ($) {
 
        loadPendingNotifications();
     //   $("#wu-custom-domain").one('submit', function(e) {

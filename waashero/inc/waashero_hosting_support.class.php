@@ -114,7 +114,7 @@ class WH_Domain_Mapping_Hosting_Support extends WU_Domain_Mapping_Hosting_Suppor
 
         $domain = $mapping->get_domain();
         $site_id = $mapping->get_site_id();
-        if( !$this->uses_waas_builder() || ! $domain  || !$site_id) {
+        if ( ! $this->uses_waas_builder() || ! $domain  || !$site_id) {
                 return;
         }
         Waashero_Api::DeleteDomainAlias( $domain ,$site_id);
