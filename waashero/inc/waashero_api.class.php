@@ -9,8 +9,7 @@ defined('ABSPATH') OR exit;
  * @version 1.0
  * @author Waashero
  */
-class Waashero_Api
-{
+class Waashero_Api {
 
 
     /**
@@ -21,41 +20,40 @@ class Waashero_Api
      * @author Waashero
      * @return $domains JSON
      */
-    public static function GetDomains()
-    {
+    public static function GetDomains() {
 
-        $endpoint = '/domains/'; //must include endslash
+        $endpoint      = '/domains/'; //must include endslash
         $authorization = "Authorization: Bearer " . WAASHERO_CLIENT_API_KEY;
 
         try {
             $ch = curl_init();
 
             // set header with token
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json', $authorization));
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json', $authorization));
             // set url
-            curl_setopt($ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL . $endpoint . WAASHERO_CLIENT_SERVER_ID);
+            curl_setopt( $ch, CURLOPT_URL, WAASHERO_CLIENT_API_URL . $endpoint . WAASHERO_CLIENT_SERVER_ID);
 
             //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+            curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+            curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
 
             // $output contains the output string
-            $output = curl_exec($ch);
+            $output = curl_exec( $ch );
 
             // close curl resource to free up system resources
-            curl_close($ch);
+            curl_close( $ch );
 
 
-            $result = json_decode($output, true);
+            $result = json_decode( $output, true );
 
-            if ($result['success'] == true) {
+            if ( $result['success'] == true ) {
 
                 return $result['domains'];
             }
 
             return null;
-        } catch (Exception $e) {
+        } catch ( Exception $e ) {
             return null;
         }
 
@@ -66,26 +64,25 @@ class Waashero_Api
      * @param [type] $domain
      * @return void
      */
-    public static function confirmSSLCert($domain)
-    {
-        $notification_key = get_current_user_id() . '_domain_notifications';
+    public static function confirmSSLCert( $domain ) {
+        $notification_key              = get_current_user_id() . '_domain_notifications';
         $sslcert_notification_response = [];
-        $endpoint = WAASHERO_CLIENT_API_URL . '/sslcert?domain=' . $domain;
+        $endpoint                      = WAASHERO_CLIENT_API_URL . '/sslcert?domain=' . $domain;
 
-        $ssl_response = self::curlHandler($endpoint, 'GET');
-        if (!empty($ssl_response['certificate']) && $ssl_response['certificate']['status'] != 'inactive') {
+        $ssl_response = self::curlHandler( $endpoint, 'GET' );
+        if ( ! empty( $ssl_response['certificate'] ) && $ssl_response['certificate']['status'] != 'inactive') {
             $sslcert_notification_response['success'] =  $ssl_response['certificate']['message'];
-        } else if(!empty($ssl_response['certificate'])){
+        } elseif ( ! empty($ssl_response['certificate'] ) ) {
             $sslcert_notification_response['error'] = $ssl_response['certificate']['message'];
-        }else{
+        }else {
             $sslcert_notification_response['error'] = "SSL Certificate not found for domain " . $domain;
         }
         // Remove SSL Confirmation flag from DB on success
-        if (!empty($sslcert_notification_response['success'])) {
+        if ( ! empty( $sslcert_notification_response['success'] ) ) {
             $ssl_certificate_confirmation_key = get_current_user_id() . '_ssl_flag';
-            delete_option($ssl_certificate_confirmation_key);
+            delete_option( $ssl_certificate_confirmation_key );
         }
-        self::setWaasheroNotifications($notification_key, $sslcert_notification_response);
+        self::setWaasheroNotifications( $notification_key, $sslcert_notification_response);
         return null;
     }
 
@@ -97,8 +94,7 @@ class Waashero_Api
      * @param [string] $data
      * @return void
      */
-    private static function curlHandler($url, $method = 'POST', $fields_string = '')
-    {
+    private static function curlHandler( $url, $method = 'POST', $fields_string = '' ) {
 
         $authorization = "Authorization: Bearer " . WAASHERO_CLIENT_API_KEY;
         try {
@@ -106,34 +102,34 @@ class Waashero_Api
             $ch = curl_init();
 
             // set header with token
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json', $authorization));
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Accept: application/json', $authorization));
             // set url
-            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt( $ch, CURLOPT_URL, $url );
 
             //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 
             // curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
             // curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            if ($method == "POST") {
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-            }else if($method == 'DELETE'){
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-            }else {
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            if ( $method == "POST" ) {
+                curl_setopt( $ch, CURLOPT_POST, true );
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields_string );
+            } elseif( $method == 'DELETE' ) {
+                curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'DELETE' );
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields_string );
+            } else {
+                curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'GET' );
             }
 
             // $output contains the output string
-            $output = curl_exec($ch);
+            $output = curl_exec( $ch );
             // close curl resource to free up system resources
-            curl_close($ch);
-            return  (!empty($output) ? json_decode($output, true) : []);
+            curl_close( $ch );
+            return  ( ! empty( $output ) ? json_decode( $output, true ) : [] );
 
-        } catch (Exception $e) {
+        } catch ( Exception $e ) {
             return null;
         }
     }
@@ -145,16 +141,15 @@ class Waashero_Api
      * @param [arrray] $value
      * @return void
      */
-    private static function setWaasheroNotifications($key, $value)
-    {
+    private static function setWaasheroNotifications( $key, $value ) {
 
-        $messages = [];
-        $notificatinos = get_option($key);
-        if (!empty($notificatinos)) {
-            $notificatinos = (!empty($value['success']) ? $value : array_merge($notificatinos, $value));
-            return update_option($key, $value);
+        $messages      = [];
+        $notificatinos = get_option( $key );
+        if ( ! empty( $notificatinos ) ) {
+            $notificatinos = ( ! empty( $value['success'] ) ? $value : array_merge($notificatinos, $value));
+            return update_option( $key, $value );
         } else {
-            return update_option($key, $value);
+            return update_option( $key, $value );
         }
     }
 
@@ -164,12 +159,11 @@ class Waashero_Api
      * @param [type] $domain
      * @return void
      */
-    public static function AddDomainAlias($domain , $site_id)
-    {
+    public static function AddDomainAlias( $domain , $site_id ) {
 
         $wildcard = false;
-        $domain = preg_replace('#^https?://#', '', $domain);
-        if (strpos($domain, '*.') === 0) {
+        $domain   = preg_replace( '#^https?://#', '', $domain );
+        if ( strpos( $domain, '*.' ) === 0 ) {
             $wildcard = true;
         }
         $data = array(
@@ -178,16 +172,16 @@ class Waashero_Api
             'site_id' => $site_id
         );
 
-        $data = http_build_query($data);
+        $data     = http_build_query( $data );
         $endpoint = WAASHERO_CLIENT_API_URL . '/ultimo/domain/' . WAASHERO_CLIENT_SERVER_ID;
 
         try {
 
-            $notification_key = get_current_user_id() . '_domain_notifications';
+            $notification_key                 = get_current_user_id() . '_domain_notifications';
             $ssl_certificate_confirmation_key = get_current_user_id() . '_ssl_flag';
-            $domain_notification_response = [];
-            $response = self::curlHandler($endpoint, 'POST', $data);
-            if (!empty($response['code']) && $response['code'] == 200)
+            $domain_notification_response     = [];
+            $response                         = self::curlHandler( $endpoint, 'POST', $data );
+            if ( ! empty( $response['code'] ) && $response['code'] == 200 )
                 $domain_notification_response['success'] = $response['message'];
             else
                 $domain_notification_response['error'] = "Sorry could not add domain " . $domain;
@@ -195,13 +189,13 @@ class Waashero_Api
             // Log Api Response for Notifications
             $confirmation_data['domain'] = $domain;
             $confirmation_data['status'] = 'pending';
-            delete_option($ssl_certificate_confirmation_key);
-            self::setWaasheroNotifications($ssl_certificate_confirmation_key, $confirmation_data);
+            delete_option( $ssl_certificate_confirmation_key );
+            self::setWaasheroNotifications( $ssl_certificate_confirmation_key, $confirmation_data );
             // Override the Api response message with  wp ultimo add domain message
             //self::setWaasheroNotifications($notification_key, $domain_notification_response);
             return null;
 
-         } catch (Exception $e) {
+         } catch ( Exception $e ) {
              return null;
          }
 
@@ -214,29 +208,28 @@ class Waashero_Api
      * @param [type] $domain
      * @return void
      */
-    public static function DeleteDomainAlias($domain , $site_id)
-    {
-        $domain = preg_replace('#^https?://#', '', $domain);
-        $data = array('domain' => $domain,'site_id'=>$site_id);
-        $data = http_build_query($data);
+    public static function DeleteDomainAlias( $domain , $site_id ) {
+        $domain   = preg_replace( '#^https?://#', '', $domain );
+        $data     = array( 'domain' => $domain,'site_id' => $site_id );
+        $data     = http_build_query( $data );
         $endpoint = WAASHERO_CLIENT_API_URL . '/ultimo/domain/' . WAASHERO_CLIENT_SERVER_ID;
         try {
-            $notification_key = get_current_user_id() . '_domain_notifications';
+            $notification_key             = get_current_user_id() . '_domain_notifications';
             $domain_notification_response = [];
-            $response = self::curlHandler($endpoint, 'DELETE', $data);
-            if (!empty($response['code']) && $response['code'] == 200) {
+            $response                     = self::curlHandler( $endpoint, 'DELETE', $data );
+            if ( ! empty( $response['code'] ) && $response['code'] == 200) {
                 $domain_notification_response['success'] = $response['message'];
-            }else
-                $domain_notification_response['error'] =  (!empty($response['message']) ? $response['message'] : "Sorry could not delete domain " . $domain);
+            } else
+                $domain_notification_response['error'] =  ( ! empty( $response['message'] ) ? $response['message'] : "Sorry could not delete domain " . $domain );
 
 
             // Override the Api response message with  wp ultimo add domain message
             //self::setWaasheroNotifications($notification_key, $domain_notification_response);
             return null;
 
-         } catch (Exception $e) {
+        } catch ( Exception $e ) {
             return null;
-         }
+        }
 
     }
 
@@ -245,21 +238,20 @@ class Waashero_Api
      *
      * @return void
      */
-    public static function getWaasheroNotifications()
-    {
+    public static function getWaasheroNotifications() {
         $notification_key = get_current_user_id() . '_domain_notifications';
-        $notificatinos = get_option($notification_key);
-        if (!empty($notificatinos)) {
+        $notificatinos    = get_option( $notification_key );
+        if ( ! empty( $notificatinos ) ) {
             // Flush Notification on Read
-            delete_option($notification_key);
+            delete_option( $notification_key );
             $js_response['success'] = true;
             $js_response['messages'] = $notificatinos;
-            echo json_encode($js_response);
+            echo json_encode( $js_response );
             die;
         } else {
             $js_response['success'] = false;
             $js_response['messages'] = '';
-            echo json_encode($js_response);
+            echo json_encode( $js_response );
             die;
         }
     }

@@ -1,7 +1,7 @@
 
 {
     "name": "waas-hero/waas-builder-mu",
-    "description": "This plugin stores all media to cloud. High performance one click implementation of object cache and Google Cloud CDN for Waashero cloud platform users.",
+    "description": "This plugin adds ssl and domain mapping integration with WP Ultimo.",
     "license": "GPL-2.0+",
     "type": "wordpress-muplugin",
     "minimum-stability":"dev",
